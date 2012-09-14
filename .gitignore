@@ -1,0 +1,7 @@
+% Ignore hidden and temporaries except .gitignore
+*~
+.*
+!.gitignore
+
+% Ignore binaries
+bin/*
