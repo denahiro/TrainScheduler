@@ -5,3 +5,11 @@
 
 % Ignore binaries
 bin/*
+build/*
+dist/*
+
+% Ignore netbeans data
+lib/*
+nbproject/*
+build.xml
+manifest.mf
