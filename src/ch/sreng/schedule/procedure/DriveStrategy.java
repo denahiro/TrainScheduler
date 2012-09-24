@@ -29,7 +29,7 @@ public interface DriveStrategy {
         }
 
         public int compareTo(AccelerationAtTime other) {
-            return Double.compare(this.time, other.acceleration);
+            return Double.compare(this.time, other.time);
         }
     }
 }

@@ -8,6 +8,7 @@ import ch.sreng.schedule.components.mobile.SimplePower;
 import ch.sreng.schedule.components.stationary.TrackSimple;
 import ch.sreng.schedule.procedure.DriveStrategy;
 import ch.sreng.schedule.procedure.DriveStrategyBangBang;
+import ch.sreng.schedule.procedure.SafetyStrategy;
 import ch.sreng.schedule.simulation.SimulationMaster;
 
 import java.util.ArrayList;
@@ -22,9 +23,10 @@ public class Scheduler {
      * @param args
      */
     public static void main(String[] args) {
-        DriveStrategy driveStrategy=new DriveStrategyBangBang(1, 30);
-        Train train1=new Train(driveStrategy,new SimplePower(1,1.3), 80/3.6,63);
-        Train train2=new Train(driveStrategy,new SimplePower(1,1.3), 80/3.6,63);
+        DriveStrategy driveStrategy=new DriveStrategyBangBang();
+        SafetyStrategy safetyStrategy=new SafetyStrategy(1, 30);
+        Train train1=new Train(driveStrategy,safetyStrategy,new SimplePower(1,1), 80/3.6,63);
+        Train train2=new Train(driveStrategy,safetyStrategy,new SimplePower(1,1), 80/3.6,63);
 
         ArrayList<TrackSimple> tracks=new ArrayList<TrackSimple>();
         for(int i=0;i<4;i++)
@@ -37,7 +39,7 @@ public class Scheduler {
         }
 
         train1.setInitialConditions(tracks.get(0), 0, 80/3.6);
-        train2.setInitialConditions(tracks.get(0), 300, 60/3.6);
+        train2.setInitialConditions(tracks.get(0), 350, 60/3.6);
 
         SimulationMaster master=new SimulationMaster();
         master.registerTrain(train1);

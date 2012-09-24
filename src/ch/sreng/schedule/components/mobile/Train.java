@@ -6,6 +6,7 @@ package ch.sreng.schedule.components.mobile;
 import ch.sreng.schedule.components.stationary.TrackComponent;
 import ch.sreng.schedule.components.stationary.TrackNode;
 import ch.sreng.schedule.procedure.DriveStrategy;
+import ch.sreng.schedule.procedure.SafetyStrategy;
 import ch.sreng.schedule.simulation.Time;
 
 /**
@@ -21,12 +22,15 @@ public class Train {
     private final double maxVelocity;
     private double length;
     private DriveStrategy driveStrategy;
+    private SafetyStrategy safetyStrategy;
     private Power power;
 
-    public Train(DriveStrategy myDriveStrategy, Power myPower, double myMaxVelocity, double length)
+    public Train(DriveStrategy myDriveStrategy, SafetyStrategy mySafetyStrategy,
+            Power myPower, double myMaxVelocity, double length)
     {
-        this.power=myPower;
         this.driveStrategy=myDriveStrategy;
+        this.safetyStrategy=mySafetyStrategy;
+        this.power=myPower;
         this.maxVelocity=myMaxVelocity;
     }
 
@@ -81,6 +85,22 @@ public class Train {
     public boolean equals(Train x)
     {
         return this==x;
+    }
+
+    public double getRelativePosition(TrackComponent origo)
+    {
+        double returnLength=0;
+        while(origo!=this.currentTrack)
+        {
+            returnLength+=origo.getLength(this);
+            origo=origo.getNextTrack(this);
+        }
+        return returnLength+this.currentTrack.getTrainEndPosition(this);
+    }
+
+    public SafetyStrategy getSafetyStrategy()
+    {
+        return this.safetyStrategy;
     }
 
     private void setPosition(double newPosition)

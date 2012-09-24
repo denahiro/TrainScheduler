@@ -13,9 +13,9 @@ import java.util.ArrayList;
  *
  * @author Denahiro
  */
-public class SimulationMaster {
+public class SimulationMaster implements Master {
 
-    private Time timer=new Time(0);
+    private RealTime timer=new RealTime(0);
 
     private ArrayList<Train> trains=new ArrayList<Train>();
     private ArrayList<TrackComponent> tracks;
