@@ -26,12 +26,13 @@ public class Train {
     private Power power;
 
     public Train(DriveStrategy myDriveStrategy, SafetyStrategy mySafetyStrategy,
-            Power myPower, double myMaxVelocity, double length)
+            Power myPower, double myMaxVelocity, double myLength)
     {
         this.driveStrategy=myDriveStrategy;
         this.safetyStrategy=mySafetyStrategy;
         this.power=myPower;
         this.maxVelocity=myMaxVelocity;
+        this.length=myLength;
     }
 
     public void setInitialConditions(TrackComponent initialTrack,double initialPosition,double initialVelocity)

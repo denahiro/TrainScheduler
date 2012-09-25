@@ -57,7 +57,8 @@ public class TimetableMaster implements Master{
             double tmpPos=currentTrain.getRelativePosition(this.originTrack);
             this.trainPositions.get(currentTrain).add(tmpPos);
             this.brickWallPositions.get(currentTrain).add(tmpPos+
-                    currentTrain.getSafetyStrategy().brickWallDistance(currentTrain, currentTrain.getVelocity()));
+                    currentTrain.getSafetyStrategy().brickWallDistance(currentTrain, currentTrain.getVelocity())
+                    +currentTrain.getLength());
         }
     }
 }

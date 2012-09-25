@@ -23,7 +23,7 @@ public class SafetyStrategy {
 
     /**
      * @param requester Train for which the brick wall distance should be calculated.
-     * @return Returns the brick wall distance calculated from the end of the train.
+     * @return Returns the brick wall distance calculated from the end of the train without the train length.
      */
     final public double brickWallDistance(Train requester,double currentVelocity)
     {
