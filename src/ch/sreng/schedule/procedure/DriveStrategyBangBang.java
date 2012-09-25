@@ -6,7 +6,6 @@ import ch.sreng.schedule.simulation.Time;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Comparator;
 import java.util.ListIterator;
 
 /**
@@ -14,22 +13,6 @@ import java.util.ListIterator;
  *
  */
 public class DriveStrategyBangBang implements DriveStrategy {
-//    private SafetyStrategy safetyStrategy;
-//
-//    public DriveStrategyBangBang(SafetyStrategy mySafety)
-//    {
-//        this.safetyStrategy=mySafety;
-//    }
-
-//    /**
-//     * @param requester Train for which the brick wall distance should be calculated.
-//     * @return Returns the brick wall distance calculated from the end of the train.
-//     */
-//    final protected double brickWallDistance(Train requester,double currentVelocity)
-//    {
-//        return requester.getLength()+this.minimalDistance+currentVelocity*this.reactionTime+
-//                0.5*currentVelocity*currentVelocity*requester.getMaxDeceleration();
-//    }
 
     final protected List<MaxVelocity> getMaxVelocityList(Train requester, Time timer)
     {
@@ -61,11 +44,16 @@ public class DriveStrategyBangBang implements DriveStrategy {
                 //Get all trains on current track and get their velocity constraint
                 for(Train otherTrain: currentTrack.getOtherTrains(requester))
                 {
-                    double tmpTrainBrakePosition=tmpDistance+currentTrack.getTrainEndPosition(otherTrain)
-                            -requester.getSafetyStrategy().brickWallDistance(requester, otherTrain.getVelocity());
-                    if(maxVelocityTrain==null || maxVelocityTrain.distance>tmpTrainBrakePosition)
+                    if(otherTrain.getVelocity()<requester.getVelocity())
                     {
-                        maxVelocityTrain=new MaxVelocity(tmpTrainBrakePosition,otherTrain.getVelocity());
+                        double tmpTrainBrakePosition=tmpDistance+currentTrack.getTrainEndPosition(otherTrain)
+                                -requester.getSafetyStrategy().brickWallDistance(requester, otherTrain.getVelocity());
+                        tmpTrainBrakePosition=requester.getVelocity()*tmpTrainBrakePosition
+                                /(requester.getVelocity()-otherTrain.getVelocity());
+                        if(maxVelocityTrain==null || maxVelocityTrain.distance>tmpTrainBrakePosition)
+                        {
+                            maxVelocityTrain=new MaxVelocity(tmpTrainBrakePosition,otherTrain.getVelocity());
+                        }
                     }
                 }
 
@@ -86,30 +74,31 @@ public class DriveStrategyBangBang implements DriveStrategy {
         } else {
             maxVelocityReturn=new ArrayList<MaxVelocity>();
             ListIterator<MaxVelocity> cleanIterator=maxVelocityTrack.listIterator();
+            double lastAddedVelocity=Double.POSITIVE_INFINITY;
             while(cleanIterator.hasNext())
             {
                 MaxVelocity currentElement=cleanIterator.next();
                 if(currentElement.distance<maxVelocityTrain.distance)
                 {
+                    lastAddedVelocity=currentElement.maxVelocity;
                     maxVelocityReturn.add(currentElement);
                 }
             }
-            maxVelocityReturn.add(maxVelocityTrain);
+            if(maxVelocityTrain.maxVelocity<lastAddedVelocity)
+            {
+                maxVelocityReturn.add(maxVelocityTrain);
+            }
         }
         
         return maxVelocityReturn;
     }
 
+    @Override
     public List<AccelerationAtTime> getAccelerationProfile(Train requester, Time timer) {
         //Get a list of distances at which the max velocity changes
         List<MaxVelocity> maxVelocity=this.getMaxVelocityList(requester, timer);
-//        ArrayList<MaxVelocity> minVelocity=new ArrayList<MaxVelocity>(maxVelocity);
-//        Collections.sort(minVelocity,new CompareVelocity());
-
-        //çççççççççççççççççç
+        
         System.out.println(maxVelocity);
-//        System.out.println(minVelocity);
-        //çççççççççççççççççç
 
         ArrayList<AccelerationAtTime> returnList=new ArrayList<AccelerationAtTime>();
         double currentVelocity=requester.getVelocity();
@@ -117,18 +106,20 @@ public class DriveStrategyBangBang implements DriveStrategy {
         ListIterator<MaxVelocity> limitIterator=maxVelocity.listIterator();
         while(limitIterator.hasNext())
         {
-            System.out.println(currentTime);
-            System.out.println(currentVelocity);
             MaxVelocity currentLimit=limitIterator.next();
             ListIterator<MaxVelocity> secondIterator=maxVelocity.listIterator(limitIterator.nextIndex());
             double currentMinBrakeDistance=Double.POSITIVE_INFINITY;
             double currentBrakeTime=0;
-            double currentTargetVelocity=currentLimit.maxVelocity;
+            double nextDistance=Double.POSITIVE_INFINITY;
             int currentLimitAdd=0;
             int targetLimitAdd=0;
             while(secondIterator.hasNext())
             {
                 MaxVelocity nextLimit=secondIterator.next();
+                if(nextDistance>nextLimit.distance)
+                {
+                    nextDistance=nextLimit.distance;
+                }
                 if(nextLimit.maxVelocity<currentLimit.maxVelocity)
                 {
                     double tmpBrakeTime=(currentLimit.maxVelocity-nextLimit.maxVelocity)
@@ -137,51 +128,63 @@ public class DriveStrategyBangBang implements DriveStrategy {
                             -nextLimit.maxVelocity*tmpBrakeTime-requester.getMaxDeceleration()
                             *tmpBrakeTime*tmpBrakeTime/2;
 
-                    if(tmpBrakeDistance<currentMinBrakeDistance)
+                    if(tmpBrakeDistance<currentMinBrakeDistance && tmpBrakeDistance<=nextDistance)
                     {
                         targetLimitAdd=currentLimitAdd;
                         currentMinBrakeDistance=tmpBrakeDistance;
                         currentBrakeTime=tmpBrakeTime;
-                        currentTargetVelocity=nextLimit.maxVelocity;
                     }
                 }
                 ++currentLimitAdd;
             }
             
-            if(currentVelocity>currentLimit.maxVelocity)
-            {
-                System.out.println(currentTime);
-                System.out.println(currentVelocity-currentLimit.maxVelocity);
-                System.out.println(currentVelocity);
-                System.out.println(currentLimit.maxVelocity);
+            if(currentVelocity>currentLimit.maxVelocity) {
                 throw new RuntimeException("Velocity too large");
-            } else if (currentVelocity<currentLimit.maxVelocity) //Accelerate
-            {
-                $$$$$$$$$$
-                throw new UnsupportedOperationException("Not supported yet.");
-            } else //Velocity is already at maximum
-            {
+            } else if (currentVelocity<currentLimit.maxVelocity) { //Accelerate
+                returnList.add(new AccelerationAtTime(currentTime, requester.getMaxAcceleration()));
+                double accelerationTime=(currentLimit.maxVelocity-currentVelocity)
+                        /requester.getMaxAcceleration();
+                double accelerationDistance=currentLimit.distance+currentVelocity*accelerationTime
+                        +requester.getMaxAcceleration()*accelerationTime*accelerationTime/2;
+                System.out.println("{"+Double.toString(accelerationTime)+","
+                        +Double.toString(accelerationDistance)+"}");
+                
+                if(currentBrakeTime>0) {//If braking is required
+                    throw new UnsupportedOperationException("Not supported yet: Accelerate braking.");
+                } else {//If no braking is required
+                    if(accelerationDistance<nextDistance) {
+                        returnList.add(new AccelerationAtTime(currentTime+accelerationTime, 0));
+                        throw new UnsupportedOperationException("Not supported yet: Accelerate no braking short accel.");
+                    } else {
+                        throw new UnsupportedOperationException("Not supported yet: Accelerate no braking long accel.");
+                    }
+                }
+//                throw new UnsupportedOperationException("Not supported yet: Accelerate.");
+            } else {//Velocity is already at maximum
                 returnList.add(new AccelerationAtTime(currentTime, 0));
-                double tmpTimeUntilBrake=currentMinBrakeDistance/currentVelocity;
-                returnList.add(new AccelerationAtTime(currentTime+tmpTimeUntilBrake, -requester.getMaxDeceleration()));
-                currentTime+=tmpTimeUntilBrake+currentBrakeTime;
-                currentVelocity=currentTargetVelocity;
+                if(currentBrakeTime>0) { //If braking is required
+                    double tmpTimeUntilBrake=currentMinBrakeDistance/currentVelocity;
+                    returnList.add(new AccelerationAtTime(currentTime+tmpTimeUntilBrake,
+                            -requester.getMaxDeceleration()));
+                    currentTime+=tmpTimeUntilBrake+currentBrakeTime;
+                    currentVelocity-=currentBrakeTime*requester.getMaxDeceleration();
+                } else { //If no braking is required
+                    currentTime+=(nextDistance-currentLimit.distance)/currentVelocity;
+                }
             }
+            
+//            System.out.println(currentTime);
+//            System.out.println(currentVelocity);
+//            System.out.println(currentBrakeTime);
+//            System.out.println(returnList);
 
             //Jump over the already calculated parts
-            for(int i=0;i<targetLimitAdd;++i) limitIterator.next();
+            for(int i=0;i<targetLimitAdd;++i)
+            {
+                limitIterator.next();
+            }
         }
         
-//        $$$$$$$$$$$$$$$$$$
-//                need to solve how to get from sorted lists to accel graph
-//        $$$$$$$$$$$$$$$$$$
-//        ListIterator<MaxVelocity> it=maxVelocity.listIterator(maxVelocity.size()-1);
-//        MaxVelocity lastElement=it.previous();
-//        while(it.hasPrevious())
-//        {
-//            MaxVelocity currentElement=it.previous();
-//            lastElement=currentElement;
-//        }
         System.out.println(returnList);
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -201,20 +204,9 @@ public class DriveStrategyBangBang implements DriveStrategy {
             return "["+Double.toString(this.distance)+","+Double.toString(this.maxVelocity)+"]";
         }
 
+        @Override
         public int compareTo(MaxVelocity other) {
             return Double.compare(this.distance, other.distance);
         }
     }
-
-//    final protected class CompareDistance implements Comparator<MaxVelocity>{
-//        public int compare(MaxVelocity o1, MaxVelocity o2) {
-//            return Double.compare(o1.distance, o2.distance);
-//        }
-//    }
-//
-//    final protected class CompareVelocity implements Comparator<MaxVelocity>{
-//        public int compare(MaxVelocity o1, MaxVelocity o2) {
-//            return Double.compare(o1.maxVelocity, o2.maxVelocity);
-//        }
-//    }
 }
