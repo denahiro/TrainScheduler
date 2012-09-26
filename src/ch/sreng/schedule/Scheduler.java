@@ -28,11 +28,12 @@ public class Scheduler {
         Train train2=new Train(driveStrategy,safetyStrategy,new SimplePower(1,1), 20,63);
 
         ArrayList<TrackSimple> tracks=new ArrayList<TrackSimple>();
-        tracks.add(new TrackSimple(100,20));
-        tracks.add(new TrackSimple(100,20));
+        tracks.add(new TrackSimple(100,15));
+        tracks.add(new TrackSimple(10,20));
         tracks.add(new TrackSimple(50,15));
         tracks.add(new TrackSimple(100,20));
         tracks.add(new TrackSimple(100,0));
+        tracks.add(new TrackSimple(100,20));
         for(int i=0;i<tracks.size()-1;i++)
         {
             tracks.get(i).setNextTrack(tracks.get(i+1));
@@ -44,8 +45,11 @@ public class Scheduler {
 
         SimulationMaster master=new SimulationMaster();
         master.registerTrain(train1);
-        master.registerTrain(train2);
+//        master.registerTrain(train2);
         master.setTimeFactor(1);
-        master.doFrame();
+//        while(true)
+        {
+            master.doFrame();
+        }
     }
 }

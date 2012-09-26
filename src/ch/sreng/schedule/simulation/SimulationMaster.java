@@ -16,6 +16,7 @@ import java.util.ArrayList;
 public class SimulationMaster implements Master {
 
     private RealTime timer=new RealTime(0);
+    private double frameRate=20;
 
     private ArrayList<Train> trains=new ArrayList<Train>();
     private ArrayList<TrackComponent> tracks;
@@ -27,6 +28,7 @@ public class SimulationMaster implements Master {
         {
             currentTrain.move(timer);
         }
+        this.timer.limitFrameRate(this.frameRate);
     }
 
     public void start()

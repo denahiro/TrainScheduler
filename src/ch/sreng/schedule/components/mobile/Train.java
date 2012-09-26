@@ -8,6 +8,8 @@ import ch.sreng.schedule.components.stationary.TrackNode;
 import ch.sreng.schedule.procedure.DriveStrategy;
 import ch.sreng.schedule.procedure.SafetyStrategy;
 import ch.sreng.schedule.simulation.Time;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * @author koenigst
@@ -79,8 +81,28 @@ public class Train {
 
     public void move(Time timer)
     {
-        this.driveStrategy.getAccelerationProfile(this, timer);
-        throw new UnsupportedOperationException("Not supported yet.");
+        List<DriveStrategy.AccelerationAtTime> accelProfile=this.driveStrategy.getAccelerationProfile(this, timer);
+        System.out.println(accelProfile);
+        double timePassed=0;
+        ListIterator<DriveStrategy.AccelerationAtTime> it=accelProfile.listIterator();
+        DriveStrategy.AccelerationAtTime currentAcceleration=it.next();
+        while(timePassed<timer.getDeltaTime())
+        {
+            DriveStrategy.AccelerationAtTime nextAcceleration=it.next();
+            double accelerationTime;
+            if(nextAcceleration.time<timer.getDeltaTime()) {
+                accelerationTime=nextAcceleration.time-timePassed;
+            } else {
+                accelerationTime=timer.getDeltaTime()-timePassed;
+            }
+            this.setPosition(this.currentTrack.getTrainEndPosition(this)+this.currentVelocity*accelerationTime
+                    +currentAcceleration.acceleration*accelerationTime*accelerationTime/2);
+            this.currentVelocity+=currentAcceleration.acceleration*accelerationTime;
+            timePassed+=accelerationTime;
+            currentAcceleration=nextAcceleration;
+        }
+        System.out.println("{"+Double.toString(this.currentTrack.getTrainEndPosition(this))+","
+                +Double.toString(this.currentVelocity)+"}");
     }
 
     public boolean equals(Train x)

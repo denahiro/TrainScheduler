@@ -40,12 +40,23 @@ public class RealTime implements Time {
         this.timeFactor=newFactor;
     }
 
-    public void advanceTime()
-    {
+    public void advanceTime() {
         long oldTime=this.lastSystemTime;
         this.lastSystemTime=System.currentTimeMillis();
-        double elapsedTime=((double) this.lastSystemTime-oldTime)/1e6;
+        double elapsedTime=((double) this.lastSystemTime-oldTime)/1e3;
         this.deltaTime=elapsedTime*this.timeFactor;
         this.currentTime+=this.deltaTime;
+    }
+
+    public void limitFrameRate(double maxRate) {
+        long elapsedTime=System.currentTimeMillis()-this.lastSystemTime;
+        if(elapsedTime<Math.round(1000/maxRate)) {
+            try {
+                Thread.currentThread().sleep(Math.round(1000/maxRate-elapsedTime));
+            }
+            catch(InterruptedException e) {
+                
+            }
+        }
     }
 }
