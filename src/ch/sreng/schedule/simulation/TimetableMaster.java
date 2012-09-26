@@ -27,9 +27,10 @@ public class TimetableMaster implements Master{
     private HashMap<Train,ArrayList<Double>> trainPositions=new HashMap<Train, ArrayList<Double>>();
     private HashMap<Train,ArrayList<Double>> brickWallPositions=new HashMap<Train, ArrayList<Double>>();
 
-    public TimetableMaster(double timestep)
+    public TimetableMaster(double timestep,TrackComponent origo)
     {
         this.timer=new FixTime(0,timestep);
+        this.originTrack=origo;
     }
 
     public void doFrame() {
@@ -43,10 +44,12 @@ public class TimetableMaster implements Master{
 
     public void registerTrain(Train newTrain) {
         this.trainPositions.put(newTrain,new ArrayList<Double>());
+        this.brickWallPositions.put(newTrain,new ArrayList<Double>());
     }
 
     public void unregisterTrain(Train oldTrain) {
         this.trainPositions.remove(oldTrain);
+        this.brickWallPositions.remove(oldTrain);
     }
 
     private void registerState()

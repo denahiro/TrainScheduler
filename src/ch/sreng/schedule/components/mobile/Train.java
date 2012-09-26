@@ -113,10 +113,11 @@ public class Train {
     public double getRelativePosition(TrackComponent origo)
     {
         double returnLength=0;
-        while(origo!=this.currentTrack)
+        TrackComponent currentTrack=origo;
+        while(currentTrack!=this.currentTrack)
         {
-            returnLength+=origo.getLength(this);
-            origo=origo.getNextTrack(this);
+            returnLength+=currentTrack.getLength(this);
+            currentTrack=currentTrack.getNextTrack(this);
         }
         return returnLength+this.currentTrack.getTrainEndPosition(this);
     }

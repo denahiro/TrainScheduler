@@ -137,11 +137,13 @@ public class DriveStrategyBangBang implements DriveStrategy {
                         targetLimitAdd=currentLimitAdd;
                         currentMinBrakeDistance=tmpBrakeDistance;
                         currentBrakeTime=tmpBrakeTime;
+                        nextDistance=nextLimit.distance;
                     }
                 }
                 ++currentLimitAdd;
             }
 
+            System.out.println(currentBrakeTime);
             System.out.println(currentMinBrakeDistance);
             
             if(currentVelocity-currentLimit.maxVelocity>1e-3) {
@@ -166,13 +168,13 @@ public class DriveStrategyBangBang implements DriveStrategy {
                         currentTime+=currentBrakeTime;
                         currentVelocity-=currentBrakeTime*requester.getMaxDeceleration();
                         currentPosition=nextDistance-requester.getLength();
-//                        returnList.add(new AccelerationAtTime(currentTime, 0));
-//                        currentTime+=requester.getLength()/currentVelocity;
                     } else {
+                        System.out.println("Shoot me");
                         double deltaAccelerationTime=(currentLimit.maxVelocity-
                                 Math.sqrt(currentLimit.maxVelocity*currentLimit.maxVelocity
                                 -2*requester.getMaxDeceleration()*(accelerationDistance-currentMinBrakeDistance)))
                                 /(requester.getMaxAcceleration()+requester.getMaxDeceleration());
+//                        System.out.println(deltaAccelerationTime);
                         currentTime+=accelerationTime-deltaAccelerationTime;
                         currentVelocity+=(accelerationTime-deltaAccelerationTime)*requester.getMaxAcceleration();
                         returnList.add(new AccelerationAtTime(currentTime, -requester.getMaxDeceleration()));
@@ -203,8 +205,10 @@ public class DriveStrategyBangBang implements DriveStrategy {
             } else {//Velocity is already at maximum
                 returnList.add(new AccelerationAtTime(currentTime, 0));
                 if(currentBrakeTime>0) { //If braking is required
-//                    double tmpTimeUntilBrake=currentMinBrakeDistance/currentVelocity;
-                    currentTime+=currentMinBrakeDistance/currentVelocity;
+//                    System.out.println(currentBrakeTime);
+//                    System.out.println(currentMinBrakeDistance);
+//                    System.out.println(currentVelocity);
+                    currentTime+=Math.max(currentMinBrakeDistance/currentVelocity,0);
                     returnList.add(new AccelerationAtTime(currentTime,-requester.getMaxDeceleration()));
                     currentTime+=currentBrakeTime;
                     currentVelocity-=currentBrakeTime*requester.getMaxDeceleration();
@@ -223,10 +227,16 @@ public class DriveStrategyBangBang implements DriveStrategy {
                 limitIterator.next();
             }
 
-            System.out.println(returnList);
+//            System.out.println(currentTime);
+//            System.out.println(currentVelocity);
+//            System.out.println(currentPosition);
+//            System.out.println(targetLimitAdd);
+//
+//            System.out.println(returnList);
+//            throw new UnsupportedOperationException("stop");
         }
         
-        System.out.println(returnList);
+//        System.out.println(returnList);
         return returnList;
     }
 
