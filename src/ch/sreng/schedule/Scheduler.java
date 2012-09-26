@@ -24,7 +24,7 @@ public class Scheduler {
     public static void main(String[] args) {
         DriveStrategy driveStrategy=new DriveStrategyBangBang();
         SafetyStrategy safetyStrategy=new SafetyStrategy(1, 30);
-        Train train1=new Train(driveStrategy,safetyStrategy,new SimplePower(10,10), 20,89);
+        Train train1=new Train(driveStrategy,safetyStrategy,new SimplePower(1,1), 20,89);
         Train train2=new Train(driveStrategy,safetyStrategy,new SimplePower(1,1), 20,63);
 
         ArrayList<TrackSimple> tracks=new ArrayList<TrackSimple>();
@@ -32,7 +32,7 @@ public class Scheduler {
         tracks.add(new TrackSimple(100,20));
         tracks.add(new TrackSimple(50,15));
         tracks.add(new TrackSimple(100,20));
-        tracks.add(new TrackSimple(100,20));
+        tracks.add(new TrackSimple(100,0));
         for(int i=0;i<tracks.size()-1;i++)
         {
             tracks.get(i).setNextTrack(tracks.get(i+1));
