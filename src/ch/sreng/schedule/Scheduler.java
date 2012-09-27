@@ -34,7 +34,7 @@ public class Scheduler {
         tracks.add(new TrackSimple(100,20));
         tracks.add(new TrackSimple(50,15));
         tracks.add(new TrackSimple(100,20));
-        tracks.add(new TrackSimple(100,20));
+        tracks.add(new TrackSimple(100,10));
         tracks.add(new TrackSimple(100,20));
         for(int i=0;i<tracks.size()-1;i++)
         {
@@ -42,14 +42,14 @@ public class Scheduler {
         }
         tracks.get(tracks.size()-1).setNextTrack(tracks.get(1));
 
-        train1.setInitialConditions(tracks.get(0), 86, 15);
+        train1.setInitialConditions(tracks.get(0), 0, 15);
 //        train2.setInitialConditions(tracks.get(0), 350, 90/3.6);
 
-        Master master=new TimetableMaster(0.5,tracks.get(0));
+        Master master=new TimetableMaster(1,tracks.get(0));
         master.registerTrain(train1);
 //        master.registerTrain(train2);
 //        master.setTimeFactor(1);
-//        for(int i=0;i<40;i++)
+        for(int i=0;i<40;i++)
         {
             master.doFrame();
         }

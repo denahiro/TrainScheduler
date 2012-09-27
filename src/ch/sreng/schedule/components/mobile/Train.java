@@ -82,7 +82,7 @@ public class Train {
     public void move(Time timer)
     {
         List<DriveStrategy.AccelerationAtTime> accelProfile=this.driveStrategy.getAccelerationProfile(this, timer);
-        System.out.println(accelProfile);
+//        System.out.println(accelProfile);
         double timePassed=0;
         ListIterator<DriveStrategy.AccelerationAtTime> it=accelProfile.listIterator();
         DriveStrategy.AccelerationAtTime currentAcceleration=it.next();
