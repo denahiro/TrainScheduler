@@ -2,6 +2,7 @@
 *~
 .*
 tmp*
+*.asv
 !.gitignore
 
 % Ignore binaries
