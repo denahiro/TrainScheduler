@@ -29,7 +29,11 @@ public interface TrackComponent {
 
     public abstract double getLength(Train requester);
 
+    public abstract double getChainage();
+
     public abstract double getTrainEndPosition(Train requester);
+    
+    public abstract double getAbsoluteTrainEndPosition(Train requester);
 
     public abstract List<Train> getOtherTrains(Train requester);
 

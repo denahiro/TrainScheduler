@@ -7,9 +7,11 @@ package ch.sreng.schedule.simulation;
 
 import ch.sreng.schedule.components.mobile.Train;
 import ch.sreng.schedule.components.stationary.TrackComponent;
+import ch.sreng.schedule.output.Graph;
 import ch.sreng.schedule.procedure.SafetyStrategy;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  *
@@ -21,47 +23,43 @@ public class TimetableMaster implements Master{
 
     private FixTime timer;
 
-    private TrackComponent originTrack;
+//    private TrackComponent originTrack;
+    private Graph output;
 
-    private ArrayList<Double> times=new ArrayList<Double>();
-    private HashMap<Train,ArrayList<Double>> trainPositions=new HashMap<Train, ArrayList<Double>>();
-    private HashMap<Train,ArrayList<Double>> brickWallPositions=new HashMap<Train, ArrayList<Double>>();
+    private List<Train> trains=new ArrayList<Train>();
 
-    public TimetableMaster(double timestep,TrackComponent origo)
+//    private ArrayList<Double> times=new ArrayList<Double>();
+//    private HashMap<Train,ArrayList<Double>> trainPositions=new HashMap<Train, ArrayList<Double>>();
+//    private HashMap<Train,ArrayList<Double>> brickWallPositions=new HashMap<Train, ArrayList<Double>>();
+
+    public TimetableMaster(double timestep,Graph outputGraph)
     {
         this.timer=new FixTime(0,timestep);
-        this.originTrack=origo;
+        this.output=outputGraph;
     }
 
     public void doFrame() {
-        this.timer.advanceTime();
-        for(Train currentTrain: trainPositions.keySet())
-        {
-            currentTrain.move(timer);
-        }
         this.registerState();
+        this.timer.advanceTime();
+        for(Train currentTrain: this.trains)
+        {
+            currentTrain.move(this.timer);
+        }
     }
 
     public void registerTrain(Train newTrain) {
-        this.trainPositions.put(newTrain,new ArrayList<Double>());
-        this.brickWallPositions.put(newTrain,new ArrayList<Double>());
+        this.trains.add(newTrain);
     }
 
     public void unregisterTrain(Train oldTrain) {
-        this.trainPositions.remove(oldTrain);
-        this.brickWallPositions.remove(oldTrain);
+        this.trains.remove(oldTrain);
     }
 
     private void registerState()
     {
-        this.times.add(this.timer.getTime());
-        for(Train currentTrain: trainPositions.keySet())
+        for(Train currentTrain: this.trains)
         {
-            double tmpPos=currentTrain.getRelativePosition(this.originTrack);
-            this.trainPositions.get(currentTrain).add(tmpPos);
-            this.brickWallPositions.get(currentTrain).add(tmpPos+
-                    currentTrain.getSafetyStrategy().brickWallDistance(currentTrain, currentTrain.getVelocity())
-                    +currentTrain.getLength());
+            this.output.registerState(this.timer.getTime(), currentTrain);
         }
     }
 }

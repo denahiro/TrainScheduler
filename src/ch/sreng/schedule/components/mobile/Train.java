@@ -88,21 +88,27 @@ public class Train {
         DriveStrategy.AccelerationAtTime currentAcceleration=it.next();
         while(timePassed<timer.getDeltaTime())
         {
-            DriveStrategy.AccelerationAtTime nextAcceleration=it.next();
             double accelerationTime;
-            if(nextAcceleration.time<timer.getDeltaTime()) {
-                accelerationTime=nextAcceleration.time-timePassed;
+            DriveStrategy.AccelerationAtTime nextAcceleration=null;
+            if(it.hasNext()) {
+                nextAcceleration=it.next();
+                if(nextAcceleration.time<timer.getDeltaTime()) {
+                    accelerationTime=nextAcceleration.time-timePassed;
+                } else {
+                    accelerationTime=timer.getDeltaTime()-timePassed;
+                }
             } else {
                 accelerationTime=timer.getDeltaTime()-timePassed;
             }
+            
             this.setPosition(this.currentTrack.getTrainEndPosition(this)+this.currentVelocity*accelerationTime
                     +currentAcceleration.acceleration*accelerationTime*accelerationTime/2);
             this.currentVelocity+=currentAcceleration.acceleration*accelerationTime;
             timePassed+=accelerationTime;
             currentAcceleration=nextAcceleration;
         }
-        System.out.println("{"+Double.toString(this.currentTrack.getTrainEndPosition(this))+","
-                +Double.toString(this.currentVelocity)+"}");
+//        System.out.println("{"+Double.toString(this.currentTrack.getTrainEndPosition(this))+","
+//                +Double.toString(this.currentVelocity)+"}");
     }
 
     public boolean equals(Train x)
@@ -110,16 +116,20 @@ public class Train {
         return this==x;
     }
 
-    public double getRelativePosition(TrackComponent origo)
-    {
-        double returnLength=0;
-        TrackComponent currentTrack=origo;
-        while(currentTrack!=this.currentTrack)
-        {
-            returnLength+=currentTrack.getLength(this);
-            currentTrack=currentTrack.getNextTrack(this);
-        }
-        return returnLength+this.currentTrack.getTrainEndPosition(this);
+//    public double getRelativePosition(TrackComponent origo)
+//    {
+//        double returnLength=0;
+//        TrackComponent currentTrack=origo;
+//        while(currentTrack!=this.currentTrack)
+//        {
+//            returnLength+=currentTrack.getLength(this);
+//            currentTrack=currentTrack.getNextTrack(this);
+//        }
+//        return returnLength+this.currentTrack.getTrainEndPosition(this);
+//    }
+
+    public double getAbsolutePosition() {
+        return this.currentTrack.getAbsoluteTrainEndPosition(this);
     }
 
     public SafetyStrategy getSafetyStrategy()

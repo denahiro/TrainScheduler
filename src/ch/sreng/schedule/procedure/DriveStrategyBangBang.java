@@ -17,7 +17,8 @@ public class DriveStrategyBangBang implements DriveStrategy {
     final protected List<MaxVelocity> getMaxVelocityList(Train requester, Time timer)
     {
         //Compute how far in front of the train we need to search for velocity changes
-        double maxAchievableVelocity=requester.getVelocity()+requester.getMaxAcceleration()*timer.getDeltaTime();
+        double maxAchievableVelocity=Math.min(requester.getMaxVelocity(),
+                requester.getVelocity()+requester.getMaxAcceleration()*timer.getDeltaTime());
         double maxCheckDistance=1.2*(0.5*requester.getMaxAcceleration()*timer.getDeltaTime()*timer.getDeltaTime()
                 +requester.getSafetyStrategy().brickWallDistance(requester, maxAchievableVelocity)
                 +requester.getLength());
@@ -50,8 +51,10 @@ public class DriveStrategyBangBang implements DriveStrategy {
                     {
                         double tmpTrainBrakePosition=tmpDistance+currentTrack.getTrainEndPosition(otherTrain)
                                 -requester.getSafetyStrategy().brickWallDistance(requester, otherTrain.getVelocity());
-                        tmpTrainBrakePosition=requester.getVelocity()*tmpTrainBrakePosition
-                                /(requester.getVelocity()-otherTrain.getVelocity());
+                        if(tmpTrainBrakePosition>0) {
+                            tmpTrainBrakePosition=requester.getVelocity()*tmpTrainBrakePosition
+                                    /(requester.getVelocity()-otherTrain.getVelocity());
+                        }
                         if(maxVelocityTrain==null || maxVelocityTrain.distance>tmpTrainBrakePosition)
                         {
                             maxVelocityTrain=new MaxVelocity(tmpTrainBrakePosition,
@@ -89,6 +92,9 @@ public class DriveStrategyBangBang implements DriveStrategy {
             }
             if(maxVelocityTrain.maxVelocity<lastAddedVelocity)
             {
+                if(maxVelocityReturn.isEmpty()) { //If no other speed limit, add current
+                    maxVelocityReturn.add(new MaxVelocity(0, requester.getCurrentTrack().getMaxVelocity(requester)));
+                }
                 maxVelocityReturn.add(maxVelocityTrain);
             }
         }
@@ -100,8 +106,10 @@ public class DriveStrategyBangBang implements DriveStrategy {
     public List<AccelerationAtTime> getAccelerationProfile(Train requester, Time timer) {
         //Get a list of distances at which the max velocity changes
         List<MaxVelocity> maxVelocity=this.getMaxVelocityList(requester, timer);
-        
+
+//        System.out.println("maxVelocity");
 //        System.out.println(maxVelocity);
+//        System.out.println(requester.getVelocity());
 
         ArrayList<AccelerationAtTime> returnList=new ArrayList<AccelerationAtTime>();
         double currentVelocity=requester.getVelocity();
@@ -146,12 +154,13 @@ public class DriveStrategyBangBang implements DriveStrategy {
 //            System.out.println(currentBrakeTime);
 //            System.out.println(currentMinBrakeDistance);
             
-            if(currentVelocity-currentLimit.maxVelocity>1e-3) {
+            /*if(currentVelocity-currentLimit.maxVelocity>1e-3) {
                 System.out.println(currentVelocity);
                 System.out.println(currentTime);
                 System.out.println(currentPosition);
+                System.out.println(currentLimit.maxVelocity);
                 throw new RuntimeException("Velocity too large");
-            } else if (currentVelocity<currentLimit.maxVelocity) { //Accelerate
+            } else*/ if (currentVelocity<currentLimit.maxVelocity) { //Accelerate
                 returnList.add(new AccelerationAtTime(currentTime, requester.getMaxAcceleration()));
                 double accelerationTime=(currentLimit.maxVelocity-currentVelocity)
                         /requester.getMaxAcceleration();
@@ -225,6 +234,7 @@ public class DriveStrategyBangBang implements DriveStrategy {
 //                    returnList.add(new AccelerationAtTime(currentTime, 0));
 //                    currentTime+=requester.getLength()/currentVelocity;
                 } else { //If no braking is required
+//                    System.out.println(currentBrakeTime);
                     currentTime+=(nextDistance-currentPosition)/currentVelocity;
                     currentPosition=nextDistance;
                 }

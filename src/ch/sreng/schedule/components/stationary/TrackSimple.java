@@ -19,11 +19,13 @@ public class TrackSimple implements TrackComponent{
 
     private double length;
 
+    private double chainage;
+
     private HashMap<Train,Double> trainEndpositions=new HashMap<Train, Double>();
 
-    public TrackSimple(double myLength,double myVelocity)
+    public TrackSimple(double myChainage,double myVelocity)
     {
-        this.length=myLength;
+        this.chainage=myChainage;
         this.maxVelocity=myVelocity;
     }
 
@@ -35,6 +37,7 @@ public class TrackSimple implements TrackComponent{
     public void setNextTrack(TrackComponent next)
     {
         this.nextTrack=next;
+        this.length=Math.abs(this.chainage-this.nextTrack.getChainage());
     }
 	
     public double getMaxVelocity(Train requester)
@@ -45,6 +48,10 @@ public class TrackSimple implements TrackComponent{
     public double getLength(Train requester)
     {
         return this.length;
+    }
+
+    public double getChainage() {
+        return this.chainage;
     }
 
     public double getTrainEndPosition(Train requester)
@@ -81,6 +88,14 @@ public class TrackSimple implements TrackComponent{
         {
             this.trainEndpositions.remove(requester);
             return false;
+        }
+    }
+
+    public double getAbsoluteTrainEndPosition(Train requester) {
+        if(this.nextTrack.getChainage()>this.chainage) {
+            return this.chainage+this.getTrainEndPosition(requester);
+        } else {
+            return this.chainage-this.getTrainEndPosition(requester);
         }
     }
 }
