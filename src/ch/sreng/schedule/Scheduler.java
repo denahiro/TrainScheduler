@@ -36,7 +36,7 @@ public class Scheduler {
         Train train1=new Train(driveStrategy,safetyStrategy,new SimplePower(1,1), 20,89);
         Train train2=new Train(driveStrategy,safetyStrategy,new SimplePower(1,1), 20,63);
 
-        Station station1=new Station(300,10);
+        Station station1=new Station(250,10);
         Station station2=new Station(100,30);
 
         station1.setNextStation(station2);
@@ -59,14 +59,14 @@ public class Scheduler {
         }
         tracks.get(tracks.size()-1).setNextLink(tracks.get(0).getLinkTo());
 
-        train1.setInitialConditions(tracks.get(0).getLinkTo(),station1, 0, 10);
-//        train2.setInitialConditions(tracks.get(0), 200, 10);
+        train1.setInitialConditions(tracks.get(0).getLinkTo(),station1, 0, 0);
+        train2.setInitialConditions(tracks.get(0).getLinkTo(),station2, 350, 0);
 
         TrainInfoGraph outGraph=new TrainInfoGraph();
 
         Master master=new TimetableMaster(0.1,outGraph);
         master.registerTrain(train1);
-//        master.registerTrain(train2);
+        master.registerTrain(train2);
 //        master.setTimeFactor(1);
         for(int i=0;i<10000;i++)
         {
