@@ -10,7 +10,7 @@ import java.util.List;
  * @author koenigst
  *
  */
-public interface TrackComponent {
+public interface TrackComponent extends Linkable<TrackComponent>{
 	
 //	protected Hashtable<Train, Double> trainPositions=new Hashtable<Train,Double>();
 	
@@ -22,8 +22,6 @@ public interface TrackComponent {
     public abstract double getMaxVelocity(Train requester);
 
     public abstract TrackComponent getNextTrack(Train requester);
-
-    public abstract void setNextTrack(TrackComponent next);
 
     public abstract void draw(java.awt.Graphics g);
 

@@ -190,15 +190,18 @@ public class DriveStrategyBangBang implements DriveStrategy {
                                 *accelCoeff-2*requester.getMaxAcceleration()
                                 *(accelerationDistance-currentMinBrakeDistance))))
                                 /(accelCoeff*requester.getMaxAcceleration());
-//                        System.out.println(deltaAccelerationTime);
-//                        System.out.println(accelerationDistance);
-                        currentTime+=accelerationTime-deltaAccelerationTime;
-                        currentVelocity+=(accelerationTime-deltaAccelerationTime)*requester.getMaxAcceleration();
+                        if(Double.isNaN(deltaAccelerationTime)) {
+                            deltaAccelerationTime=accelerationTime;
+                        }
+                        accelerationTime=Math.max(accelerationTime-deltaAccelerationTime,0);
+                        currentTime+=accelerationTime;
+                        currentVelocity+=accelerationTime*requester.getMaxAcceleration();
                         returnList.add(new AccelerationAtTime(currentTime, -requester.getMaxDeceleration()));
                         double deltaDecelerationTime=deltaAccelerationTime*requester.getMaxAcceleration()
                                 /requester.getMaxDeceleration();
-                        currentTime+=currentBrakeTime-deltaDecelerationTime;
-                        currentVelocity-=(currentBrakeTime-deltaDecelerationTime)*requester.getMaxDeceleration();
+                        currentBrakeTime=Math.max(currentBrakeTime-deltaDecelerationTime,0);
+                        currentTime+=currentBrakeTime;
+                        currentVelocity-=currentBrakeTime*requester.getMaxDeceleration();
 //                        returnList.add(new AccelerationAtTime(currentTime, 0));
 //                        currentTime+=requester.getLength()/currentVelocity;
                         currentPosition=nextDistance-requester.getLength();

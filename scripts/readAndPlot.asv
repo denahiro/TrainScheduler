@@ -1,0 +1,6 @@
+a=dlmread('../tmp.dat',',',1,0);
+
+figure()
+plot(a(:,3),a(:,2))
+
+ds=[0;diff(

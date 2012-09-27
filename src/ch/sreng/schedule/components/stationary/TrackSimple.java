@@ -34,8 +34,11 @@ public class TrackSimple implements TrackComponent{
         return this.nextTrack;
     }
 
-    public void setNextTrack(TrackComponent next)
-    {
+    public TrackComponent getLinkTo() {
+        return this;
+    }
+
+    public void setNextLink(TrackComponent next) {
         this.nextTrack=next;
         this.length=Math.abs(this.chainage-this.nextTrack.getChainage());
     }
