@@ -9,6 +9,7 @@ import ch.sreng.schedule.components.stationary.Linkable;
 import ch.sreng.schedule.components.stationary.Station;
 import ch.sreng.schedule.components.stationary.TrackComponent;
 import ch.sreng.schedule.components.stationary.TrackSimple;
+import ch.sreng.schedule.output.GraphPrinter;
 import ch.sreng.schedule.output.TrainInfoGraph;
 import ch.sreng.schedule.procedure.DriveStrategy;
 import ch.sreng.schedule.procedure.DriveStrategyBangBang;
@@ -16,6 +17,7 @@ import ch.sreng.schedule.procedure.SafetyStrategy;
 import ch.sreng.schedule.simulation.Master;
 import ch.sreng.schedule.simulation.SimulationMaster;
 import ch.sreng.schedule.simulation.TimetableMaster;
+import java.awt.Dimension;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -80,6 +82,13 @@ public class Scheduler {
             output.close();
         } catch (FileNotFoundException ex) {
             System.out.println("File not here.");
+        }
+
+        GraphPrinter myGraphPrinter=new GraphPrinter();
+        try {
+            myGraphPrinter.print(outGraph, new File("tmp2.emf"),new Dimension(300,300));
+        } catch (FileNotFoundException ex) {
+            System.out.println("File not written.");
         }
     }
 }

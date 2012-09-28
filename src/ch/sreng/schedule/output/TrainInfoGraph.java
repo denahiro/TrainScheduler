@@ -6,7 +6,10 @@
 package ch.sreng.schedule.output;
 
 import ch.sreng.schedule.components.mobile.Train;
-import java.io.PrintStream;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +17,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.TreeMap;
 
 /**
  *
@@ -48,6 +50,15 @@ public class TrainInfoGraph implements Graph {
             }
             ++currentTrain;
         }
+    }
+
+    public void draw(Graphics2D g,Dimension dim,Insets insets) {
+        
+
+//        g.setColor(Color.red);
+//        g.scale(0.01, 0.01);
+//        g.drawLine(0, 0, 1000, 1000);
+//        g.drawString("Test String", 500, 500);
     }
 
     protected class DataPoint {
