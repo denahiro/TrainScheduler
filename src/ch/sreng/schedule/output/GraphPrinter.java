@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import javax.swing.JPanel;
 import org.freehep.graphics2d.VectorGraphics;
 import org.freehep.graphicsio.emf.EMFGraphics2D;
+import org.freehep.graphicsio.pdf.PDFGraphics2D;
 import org.freehep.swing.Headless;
 
 /**
@@ -31,7 +32,8 @@ public class GraphPrinter{
         headless.pack();
         headless.setVisible(true);
         
-        VectorGraphics graphics = new EMFGraphics2D(output, yourPanel);
+//        VectorGraphics graphics = new EMFGraphics2D(output, yourPanel);
+        VectorGraphics graphics = new PDFGraphics2D(output, yourPanel);
         graphics.startExport();
         yourPanel.print(graphics);
         graphics.endExport();

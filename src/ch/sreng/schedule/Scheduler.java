@@ -36,7 +36,7 @@ public class Scheduler {
         DriveStrategy driveStrategy=new DriveStrategyBangBang();
         SafetyStrategy safetyStrategy=new SafetyStrategy(1, 30,0.07);
         Train train1=new Train(driveStrategy,safetyStrategy,new SimplePower(1,1), 20,89);
-        Train train2=new Train(driveStrategy,safetyStrategy,new SimplePower(1,1), 20,63);
+        Train train2=new Train(driveStrategy,safetyStrategy,new SimplePower(1,1), 20,89);
 
         Station station1=new Station(250,10);
         Station station2=new Station(100,30);
@@ -86,7 +86,7 @@ public class Scheduler {
 
         GraphPrinter myGraphPrinter=new GraphPrinter();
         try {
-            myGraphPrinter.print(outGraph, new File("tmp2.emf"),new Dimension(300,300));
+            myGraphPrinter.print(outGraph, new File("tmp2.pdf"),new Dimension(400,300));
         } catch (FileNotFoundException ex) {
             System.out.println("File not written.");
         }
