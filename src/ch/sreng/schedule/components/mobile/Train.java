@@ -9,6 +9,7 @@ import ch.sreng.schedule.components.stationary.TrackComponent;
 import ch.sreng.schedule.procedure.DriveStrategy;
 import ch.sreng.schedule.procedure.SafetyStrategy;
 import ch.sreng.schedule.simulation.Time;
+import java.awt.Color;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -29,15 +30,17 @@ public class Train {
     private DriveStrategy driveStrategy;
     private SafetyStrategy safetyStrategy;
     private Power power;
+    private Color trainColor;
 
     public Train(DriveStrategy myDriveStrategy, SafetyStrategy mySafetyStrategy,
-            Power myPower, double myMaxVelocity, double myLength)
+            Power myPower, double myMaxVelocity, double myLength,Color myColor)
     {
         this.driveStrategy=myDriveStrategy;
         this.safetyStrategy=mySafetyStrategy;
         this.power=myPower;
         this.maxVelocity=myMaxVelocity;
         this.length=myLength;
+        this.trainColor=myColor;
     }
 
     public void setInitialConditions(TrackComponent initialTrack,Station initialTargetStation
@@ -82,6 +85,10 @@ public class Train {
     public TrackComponent getCurrentTrack()
     {
         return this.currentTrack;
+    }
+
+    public Color getColor() {
+        return this.trainColor;
     }
 
     public void move(Time timer)

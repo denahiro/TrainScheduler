@@ -6,9 +6,7 @@
 package ch.sreng.schedule.output;
 
 import ch.sreng.schedule.components.mobile.Train;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -55,15 +53,19 @@ public class TrainInfoGraph implements Graph {
 
     public void draw(VectorGraphics g,Dimension dim,Insets insets) {
         GraphAxes myAxes=new GraphAxes();
-        for(List<DataPoint> c: this.data.values()) {
+        for(Train currentTrain: this.data.keySet()) {
+            List<DataPoint> c=this.data.get(currentTrain);
             List<Double> times=new ArrayList<Double>();
             List<Double> positions=new ArrayList<Double>();
             for(DataPoint p: c) {
                 times.add(p.time);
                 positions.add(p.position);
             }
-            myAxes.plot(times, positions, Color.BLACK);
+            myAxes.plot(times, positions, currentTrain.getColor());
         }
+
+        myAxes.title("Graphical Timetable");
+        myAxes.label("Time [s]", "Position [m]");
 
         myAxes.draw(g, dim, insets);
     }

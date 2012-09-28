@@ -11,6 +11,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Insets;
 import java.awt.font.TextAttribute;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -22,17 +23,21 @@ import org.freehep.graphics2d.VectorGraphics;
  */
 public class GraphAxes {
     private List<Curve> curves=new ArrayList<Curve>();
-    private String xLabel;
-    private String yLabel;
+    private String xLabel=new String();
+    private String yLabel=new String();
+    private String axisTitle=new String();
 
     final protected int N_TICKS=11;
-    final protected int BOTTOM_GAP=50;
-    final protected int TOP_GAP=50;
+    final protected int BOTTOM_GAP=30;
+    final protected int TOP_GAP=30;
     final protected int LEFT_GAP=50;
     final protected int RIGHT_GAP=50;
     final protected double CURVE_LINE_WIDTH=1;
     final protected double AXIS_LINE_WIDTH=0.5;
     final protected int TICK_LENGTH=5;
+    final protected int TICK_TO_LABEL_GAP=10;
+    final protected Font LABEL_FONT=new Font(Font.SANS_SERIF, Font.PLAIN, 10);
+    final protected Font TITLE_FONT=new Font(Font.SANS_SERIF, Font.BOLD, 10);
 
     public void plot(List<Double> x, List<Double>y, Color lineColor)
     {
@@ -47,6 +52,10 @@ public class GraphAxes {
     public void label(String newXLabel, String newYLabel) {
         this.xLabel=newXLabel;
         this.yLabel=newYLabel;
+    }
+
+    public void title(String newTitle) {
+        this.axisTitle=newTitle;
     }
 
     private BoundingBox getPlotArea(Dimension dim,Insets insets) {
@@ -129,7 +138,7 @@ public class GraphAxes {
         List<Double> yTicks=this.getTicks(dataBB.yMax,dataBB.yMin);
         Transform xTrans=new Transform(dataBB.xMax, dataBB.xMin, plotBB.xMax, plotBB.xMin);
         Transform yTrans=new Transform(dataBB.yMax, dataBB.yMin, plotBB.yMax, plotBB.yMin);
-        g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
+        g.setFont(this.LABEL_FONT);
         FontMetrics fm=g.getFontMetrics();
         for(Double pos: xTicks) {
             double tickPos=xTrans.doTransform(pos);
@@ -153,6 +162,20 @@ public class GraphAxes {
             g.drawLine(plotBB.xMin, tickPos, plotBB.xMin+this.TICK_LENGTH, tickPos);
             g.drawString(tickString, plotBB.xMin-fm.stringWidth(tickString), tickPos+3);
         }
+
+        g.drawString(this.xLabel, (plotBB.xMax+plotBB.xMin)/2-fm.stringWidth(this.xLabel)/2
+                , plotBB.yMin+fm.getHeight()+fm.getMaxDescent()+this.TICK_TO_LABEL_GAP);
+        AffineTransform standard=g.getTransform();
+        AffineTransform newTrans=new AffineTransform(standard);
+        newTrans.setToRotation(-Math.PI/2);
+        g.setTransform(newTrans);
+        g.drawString(this.yLabel, -(plotBB.yMax+plotBB.yMin)/2-fm.stringWidth(this.yLabel)/2,5+fm.getMaxAscent());
+        g.setTransform(standard);
+
+        g.setFont(this.TITLE_FONT);
+        fm=g.getFontMetrics();
+        g.drawString(this.axisTitle, (plotBB.xMax+plotBB.xMin)/2-fm.stringWidth(this.axisTitle)/2
+                , plotBB.yMax-fm.getMaxDescent()-this.TICK_TO_LABEL_GAP);
     }
 
     public class Curve {

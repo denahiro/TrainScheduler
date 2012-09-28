@@ -17,6 +17,7 @@ import ch.sreng.schedule.procedure.SafetyStrategy;
 import ch.sreng.schedule.simulation.Master;
 import ch.sreng.schedule.simulation.SimulationMaster;
 import ch.sreng.schedule.simulation.TimetableMaster;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,8 +36,8 @@ public class Scheduler {
     public static void main(String[] args) {
         DriveStrategy driveStrategy=new DriveStrategyBangBang();
         SafetyStrategy safetyStrategy=new SafetyStrategy(1, 30,0.07);
-        Train train1=new Train(driveStrategy,safetyStrategy,new SimplePower(1,1), 20,89);
-        Train train2=new Train(driveStrategy,safetyStrategy,new SimplePower(1,1), 20,89);
+        Train train1=new Train(driveStrategy,safetyStrategy,new SimplePower(1,1), 20,89,Color.RED);
+        Train train2=new Train(driveStrategy,safetyStrategy,new SimplePower(1,1), 20,89,Color.BLACK);
 
         Station station1=new Station(250,10);
         Station station2=new Station(100,30);
@@ -86,7 +87,7 @@ public class Scheduler {
 
         GraphPrinter myGraphPrinter=new GraphPrinter();
         try {
-            myGraphPrinter.print(outGraph, new File("tmp2.pdf"),new Dimension(400,300));
+            myGraphPrinter.print(outGraph, new File("tmp2.emf"),new Dimension(400,300));
         } catch (FileNotFoundException ex) {
             System.out.println("File not written.");
         }
