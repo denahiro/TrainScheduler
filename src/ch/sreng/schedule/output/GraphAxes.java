@@ -143,24 +143,28 @@ public class GraphAxes {
         for(Double pos: xTicks) {
             double tickPos=xTrans.doTransform(pos);
             String tickString;
-            if(pos==0 || pos>=1) {
-                tickString=Integer.toString((int)Math.round(pos));
-            } else {
-                tickString=Double.toString(pos);
+            if(pos<=dataBB.xMax) {
+                if(pos==0 || pos>=1) {
+                    tickString=Integer.toString((int)Math.round(pos));
+                } else {
+                    tickString=Double.toString(pos);
+                }
+                g.drawLine(tickPos, plotBB.yMin, tickPos, plotBB.yMin-this.TICK_LENGTH);
+                g.drawString(tickString, tickPos-fm.stringWidth(tickString)/2, plotBB.yMin+fm.getMaxAscent());
             }
-            g.drawLine(tickPos, plotBB.yMin, tickPos, plotBB.yMin-this.TICK_LENGTH);
-            g.drawString(tickString, tickPos-fm.stringWidth(tickString)/2, plotBB.yMin+fm.getMaxAscent());
         }
         for(Double pos: yTicks) {
             double tickPos=yTrans.doTransform(pos);
             String tickString;
-            if(pos==0 || pos>=1) {
-                tickString=Integer.toString((int)Math.round(pos));
-            } else {
-                tickString=Double.toString(pos);
+            if(pos<=dataBB.yMax) {
+                if(pos==0 || pos>=1) {
+                    tickString=Integer.toString((int)Math.round(pos));
+                } else {
+                    tickString=Double.toString(pos);
+                }
+                g.drawLine(plotBB.xMin, tickPos, plotBB.xMin+this.TICK_LENGTH, tickPos);
+                g.drawString(tickString, plotBB.xMin-fm.stringWidth(tickString), tickPos+3);
             }
-            g.drawLine(plotBB.xMin, tickPos, plotBB.xMin+this.TICK_LENGTH, tickPos);
-            g.drawString(tickString, plotBB.xMin-fm.stringWidth(tickString), tickPos+3);
         }
 
         g.drawString(this.xLabel, (plotBB.xMax+plotBB.xMin)/2-fm.stringWidth(this.xLabel)/2

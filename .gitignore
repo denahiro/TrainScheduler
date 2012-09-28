@@ -1,5 +1,6 @@
 % Ignore hidden and temporaries except .gitignore
 *~
+~*
 .*
 tmp*
 *.asv
