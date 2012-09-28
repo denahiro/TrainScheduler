@@ -21,6 +21,8 @@ public class GraphAxes {
     private String xLabel;
     private String yLabel;
 
+    final public int N_TICKS=11;
+
     public void plot(List<Double> x, List<Double>y, Color lineColor)
     {
         this.curves.add(new Curve(x,y,lineColor));
@@ -36,10 +38,14 @@ public class GraphAxes {
         this.yLabel=newYLabel;
     }
 
+    private BoundingBox getPlotArea(Dimension dim,Insets insets) {
+        
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
     public void draw(VectorGraphics g,Dimension dim,Insets insets)
     {
-        BoundingBox dataBB=new BoundingBox(Double.POSITIVE_INFINITY,Double.NEGATIVE_INFINITY
-                    ,Double.POSITIVE_INFINITY,Double.NEGATIVE_INFINITY);
+        BoundingBox dataBB=new BoundingBox();
         for(Curve c: this.curves) {
             BoundingBox tmpBB=c.getBoundingBox();
             if(tmpBB.xMin<dataBB.xMin) dataBB.xMin=tmpBB.xMin;
@@ -49,6 +55,10 @@ public class GraphAxes {
         }
 
         System.out.println(dataBB);
+        System.out.println(Math.log10(Math.max(Math.max(Math.abs(dataBB.xMax), Math.abs(dataBB.xMin))
+                ,Math.max(Math.abs(dataBB.yMax), Math.abs(dataBB.yMin)))));
+
+        BoundingBox plotBB=this.getPlotArea(dim,insets);
 
         throw new UnsupportedOperationException("Not yet implemented.");
     }
@@ -65,8 +75,7 @@ public class GraphAxes {
         }
 
         public BoundingBox getBoundingBox() {
-            BoundingBox rBB=new BoundingBox(Double.POSITIVE_INFINITY,Double.NEGATIVE_INFINITY
-                    ,Double.POSITIVE_INFINITY,Double.NEGATIVE_INFINITY);
+            BoundingBox rBB=new BoundingBox();
 
             for(double c: this.x) {
                 if(c<rBB.xMin) rBB.xMin=c;
@@ -93,6 +102,11 @@ public class GraphAxes {
             this.xMin=nXMin;
             this.yMax=nYMax;
             this.yMin=nYMin;
+        }
+
+        public BoundingBox() {
+            this(Double.POSITIVE_INFINITY,Double.NEGATIVE_INFINITY
+                    ,Double.POSITIVE_INFINITY,Double.NEGATIVE_INFINITY);
         }
 
         @Override
