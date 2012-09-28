@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import org.freehep.graphics2d.VectorGraphics;
 
 /**
  *
@@ -52,20 +53,26 @@ public class TrainInfoGraph implements Graph {
         }
     }
 
-    public void draw(Graphics2D g,Dimension dim,Insets insets) {
-        
+    public void draw(VectorGraphics g,Dimension dim,Insets insets) {
+        GraphAxes myAxes=new GraphAxes();
+        for(List<DataPoint> c: this.data.values()) {
+            List<Double> times=new ArrayList<Double>();
+            List<Double> positions=new ArrayList<Double>();
+            for(DataPoint p: c) {
+                times.add(p.time);
+                positions.add(p.position);
+            }
+            myAxes.plot(times, positions, Color.BLACK);
+        }
 
-//        g.setColor(Color.red);
-//        g.scale(0.01, 0.01);
-//        g.drawLine(0, 0, 1000, 1000);
-//        g.drawString("Test String", 500, 500);
+        myAxes.draw(g, dim, insets);
     }
 
     protected class DataPoint {
-        private double time;
-        private double position;
-        private double velocity;
-        private double maxVelocity;
+        public double time;
+        public double position;
+        public double velocity;
+        public double maxVelocity;
 
         public DataPoint(double myTime,Train requester) {
             this.time=myTime;
