@@ -11,6 +11,7 @@ import ch.sreng.schedule.procedure.SafetyStrategy;
 import ch.sreng.schedule.simulation.Time;
 import java.awt.Color;
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class Train {
     private static void loadIni() {
         if(MAX_VELOCITY==null) {
             try {
-                BufferedReader sourceReader=new BufferedReader(new InputStreamReader(Scheduler.class.getResourceAsStream(SOURCE_FILE)));
+                BufferedReader sourceReader=new BufferedReader(new FileReader(SOURCE_FILE));
                 String currentLine=sourceReader.readLine();
                 while(currentLine!=null) {
                     String[] splitLine=currentLine.split("=");

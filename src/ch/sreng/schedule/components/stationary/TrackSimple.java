@@ -4,6 +4,7 @@ import ch.sreng.schedule.Scheduler;
 import ch.sreng.schedule.components.mobile.Train;
 import java.awt.Graphics;
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -33,7 +34,7 @@ public class TrackSimple implements TrackComponent{
         if(gradientMaxVelocity==null) {
             try {
                     gradientMaxVelocity=new TreeMap<Double, Double>();
-                    BufferedReader sourceReader=new BufferedReader(new InputStreamReader(Scheduler.class.getResourceAsStream(SOURCE_FILE)));
+                    BufferedReader sourceReader=new BufferedReader(new FileReader(SOURCE_FILE));
                     String currentLine=sourceReader.readLine();
                     while(currentLine!=null) {
                         String[] splitLine=currentLine.split(";");

@@ -6,6 +6,7 @@ package ch.sreng.schedule.components.stationary;
 import ch.sreng.schedule.Scheduler;
 import ch.sreng.schedule.components.mobile.Train;
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -22,14 +23,14 @@ public class Station implements Linkable<TrackComponent>{
     protected static Double MAX_STATION_VELOCITY=null;
     protected static Double STOP_STRETCH_LENGTH=null;
     final static protected double MAX_STOP_VELOCITY=1e-3;
-    protected double waitTime;
+    protected static Double WAIT_TIME=null;
     private double gradient;
 
     final private static String SOURCE_FILE="data/track/station.ini";
     private static void loadIni() {
         if(MAX_STATION_VELOCITY==null) {
             try {
-                BufferedReader sourceReader=new BufferedReader(new InputStreamReader(Scheduler.class.getResourceAsStream(SOURCE_FILE)));
+                BufferedReader sourceReader=new BufferedReader(new FileReader(SOURCE_FILE));
                 String currentLine=sourceReader.readLine();
                 while(currentLine!=null) {
                     String[] splitLine=currentLine.split("=");
@@ -37,6 +38,8 @@ public class Station implements Linkable<TrackComponent>{
                         MAX_STATION_VELOCITY=Double.parseDouble(splitLine[1]);
                     } else if(splitLine[0].equalsIgnoreCase("stopTrackLength")) {
                         STOP_STRETCH_LENGTH=Double.parseDouble(splitLine[1]);
+                    } else if(splitLine[0].equalsIgnoreCase("waitTime")) {
+                        WAIT_TIME=Double.parseDouble(splitLine[1]);
                     }
                     currentLine=sourceReader.readLine();
                 }
@@ -48,11 +51,10 @@ public class Station implements Linkable<TrackComponent>{
 
     private Station nextStation;
 
-    public Station(double chainage, double myWaitTime,double myGradient) {
+    public Station(double chainage,double myGradient) {
         loadIni();
         this.gradient=myGradient;
         this.platformStretch=new TrackSimple(chainage, MAX_STATION_VELOCITY,this.gradient);
-        this.waitTime=myWaitTime;
     }
 
     public TrackComponent getLinkTo() {
@@ -82,7 +84,7 @@ public class Station implements Linkable<TrackComponent>{
     }
 
     public double getWaitTime() {
-        return this.waitTime;
+        return WAIT_TIME;
     }
 
     protected class TrackStopper extends TrackSimple {

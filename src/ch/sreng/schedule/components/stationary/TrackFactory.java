@@ -5,10 +5,10 @@
 
 package ch.sreng.schedule.components.stationary;
 
-import ch.sreng.schedule.Scheduler;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,8 +22,8 @@ public class TrackFactory {
 
     final static private String dataFolder="data/track/";
 
-    private static BufferedReader getAlignmentReader(String filename) {
-        return new BufferedReader(new InputStreamReader(Scheduler.class.getResourceAsStream(dataFolder+filename)));
+    private static BufferedReader getAlignmentReader(String filename) throws FileNotFoundException {
+        return new BufferedReader(new FileReader(dataFolder+filename));
     }
 
     private static List<List<String>> readStrings(BufferedReader myReader) throws IOException {
@@ -149,8 +149,6 @@ public class TrackFactory {
             //Get the station name
             newSegment.stationName=currentHor.stationName;
 
-            System.out.println(newSegment);
-
             //Add to the output
             out.add(newSegment);
 
@@ -185,7 +183,6 @@ public class TrackFactory {
         List<Segment> horizontalSegments=new ArrayList<Segment>();
         List<Segment> verticalSegments=new ArrayList<Segment>();
         for(List<String> line: data) {
-            System.out.println(line);
             ListIterator<String> lineIt=line.listIterator();
             horizontalSegments.add(parseHorizontalSegment(lineIt));
             if(lineIt.hasNext()) verticalSegments.add(parseVerticalSegment(lineIt));
@@ -196,11 +193,78 @@ public class TrackFactory {
         return combined;
     }
 
-    public static void loadFile(String filename) {
-        try {
-            List<Segment> segments = parseAllSegments(filename);
-        } catch (IOException ex) {
-            System.out.println("Unable to open file \""+filename+"\".");
+    private static TrackContainer convertToTracks(List<Segment> segments) {
+        List<Station> myStations=new ArrayList<Station>();
+        List<Linkable<TrackComponent>> myLinkables=new ArrayList<Linkable<TrackComponent>>();
+
+        ListIterator<Segment> it=segments.listIterator();
+
+        while(it.hasNext()) {
+            Segment currentSegment=it.next();
+            if(currentSegment.stationName==null) {
+                myLinkables.add(new TrackSimple(currentSegment.beginChainage
+                        ,currentSegment.maxVelocity, currentSegment.gradient));
+            } else {
+                Station tmpStation=new Station(currentSegment.beginChainage, currentSegment.gradient);
+                myStations.add(tmpStation);
+                myLinkables.add(tmpStation);
+            }
+        }
+
+        while(it.hasPrevious()) {
+            Segment currentSegment=it.previous();
+            if(currentSegment.stationName==null) {
+                myLinkables.add(new TrackSimple(currentSegment.endChainage
+                        ,currentSegment.maxVelocity, currentSegment.gradient));
+            } else {
+                Station tmpStation=new Station(currentSegment.endChainage, currentSegment.gradient);
+                myStations.add(tmpStation);
+                myLinkables.add(tmpStation);
+            }
+        }
+
+        ListIterator<Linkable<TrackComponent>> linker=myLinkables.listIterator();
+        Linkable<TrackComponent> lastLinkable=linker.next();
+        while(linker.hasNext()) {
+            Linkable<TrackComponent> currentLinkable=linker.next();
+            lastLinkable.setNextLink(currentLinkable.getLinkTo());
+            lastLinkable=currentLinkable;
+        }
+        lastLinkable.setNextLink(myLinkables.get(0).getLinkTo());
+
+        ListIterator<Station> linkerStations=myStations.listIterator();
+        Station lastStation=linkerStations.next();
+        while(linkerStations.hasNext()) {
+            Station currentStation=linkerStations.next();
+            lastStation.setNextStation(currentStation);
+            lastStation=currentStation;
+        }
+        lastStation.setNextStation(myStations.get(0));
+
+        return new TrackContainer(myLinkables.get(0).getLinkTo(), myStations.get(0));
+    }
+
+    public static TrackContainer loadFile(String filename) throws IOException {
+        List<Segment> segments = parseAllSegments(filename);
+        TrackContainer out=convertToTracks(segments);
+        return out;
+    }
+
+    public static class TrackContainer {
+        private TrackComponent firstTrack;
+        private Station firstStation;
+
+        public TrackContainer(TrackComponent myFirstTrack, Station myFirstStation) {
+            this.firstStation=myFirstStation;
+            this.firstTrack=myFirstTrack;
+        }
+
+        public TrackComponent getFirstTrack(){
+            return this.firstTrack;
+        }
+
+        public Station getFirstStation(){
+            return this.firstStation;
         }
     }
 
