@@ -18,9 +18,10 @@ public class SimplePower implements Power {
     private final double deceleration;
 
     private final double BASE_POWER_CONSUMPTION=3000;
-    private final double LINEAR_DRAG_COEFF=30000;
-    private final double QUADRATIC_DRAG_COEFF=500;
     private final double TRAIN_WEIGHT=120000;
+    private final double LINEAR_DRAG_COEFF=0.25;//30000;
+    private final double QUADRATIC_DRAG_COEFF=0.004;//500;
+    private final double EFFICIENCY=0.8;
 
     private double currentPowerConsumption=this.BASE_POWER_CONSUMPTION;
 
@@ -43,16 +44,17 @@ public class SimplePower implements Power {
             double currentVelo=veloIt.next();
 
             if(currentTime-previousTime>0) {
-                double stepPowerConsumption=this.LINEAR_DRAG_COEFF*(currentVelo+previousVelo)/2;
+                double stepPowerConsumption=this.TRAIN_WEIGHT*this.LINEAR_DRAG_COEFF
+                        *(currentVelo+previousVelo)/2;
 
                 double deltaV=currentVelo-previousVelo;
-                stepPowerConsumption+=this.QUADRATIC_DRAG_COEFF*(previousVelo*previousVelo
-                        +deltaV*previousVelo+deltaV*deltaV/3);
+                stepPowerConsumption+=this.TRAIN_WEIGHT*this.QUADRATIC_DRAG_COEFF
+                        *(previousVelo*previousVelo+deltaV*previousVelo+deltaV*deltaV/3);
 
                 stepPowerConsumption+=this.TRAIN_WEIGHT*(currentVelo*currentVelo/2
                         -previousVelo*previousVelo/2)/(currentTime-previousTime);
 
-                stepPowerConsumption*=(currentTime-previousTime);
+                stepPowerConsumption*=(currentTime-previousTime)/this.EFFICIENCY;
 
                 this.currentPowerConsumption+=Math.max(stepPowerConsumption,0);
             }
