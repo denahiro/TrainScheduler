@@ -74,7 +74,7 @@ public class GraphAxes {
         double exponent=Math.floor(Math.log10(max-min));
         double coefficient=(max-min)/Math.pow(10,exponent);
 
-        if(coefficient<4) {
+        if(coefficient<2) {
             exponent-=1;
             coefficient*=10;
         }

@@ -44,11 +44,11 @@ public class EnergyGraph extends Graph {
         {
             case LARGE:
                 this.timeFactor=60;
-                this.energyFactor=1000;
+                this.energyFactor=1000000;
                 this.xLabel="Time [min]";
-                this.yLabel="Consumed Power [kW]";
+                this.yLabel="Consumed Power [MW]";
                 this.xName="timeMin";
-                this.yName="powerKW";
+                this.yName="powerMW";
                 break;
             default :
                 this.timeFactor=1;
