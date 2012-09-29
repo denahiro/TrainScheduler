@@ -10,7 +10,6 @@ tmp*
 bin/*
 build/*
 dist/*
-data/*
 
 % Ignore netbeans data
 lib/*
