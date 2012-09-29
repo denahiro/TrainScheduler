@@ -5,11 +5,12 @@ package ch.sreng.schedule.components.mobile;
 
 import ch.sreng.schedule.components.stationary.Station;
 import ch.sreng.schedule.components.stationary.TrackComponent;
-//import ch.sreng.schedule.components.stationary.TrackNode;
 import ch.sreng.schedule.procedure.DriveStrategy;
 import ch.sreng.schedule.procedure.SafetyStrategy;
 import ch.sreng.schedule.simulation.Time;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -91,6 +92,10 @@ public class Train {
         return this.trainColor;
     }
 
+    public double getPowerConsumption() {
+        return this.power.getPowerConsumption();
+    }
+
     public void move(Time timer)
     {
         if(this.targetStation.arrived(this)) {
@@ -109,9 +114,15 @@ public class Train {
                 this.departureTime=null;
                 this.targetStation=this.targetStation.getNextStation();
             }
+
+            this.power.calculatePowerConsumption(Arrays.asList(0.0d,timer.getDeltaTime()), Arrays.asList(0.0d,0.0d));
         } else {
+            List<Double> timeList=new ArrayList<Double>();
+            List<Double> velocityList=new ArrayList<Double>();
+            timeList.add(0.0d);
+            velocityList.add(this.currentVelocity);
+
             List<DriveStrategy.AccelerationAtTime> accelProfile=this.driveStrategy.getAccelerationProfile(this, timer);
-//            System.out.println(accelProfile);
             double timePassed=0;
             ListIterator<DriveStrategy.AccelerationAtTime> it=accelProfile.listIterator();
             DriveStrategy.AccelerationAtTime currentAcceleration=it.next();
@@ -139,10 +150,13 @@ public class Train {
                 this.currentVelocity+=currentAcceleration.acceleration*accelerationTime;
                 timePassed+=accelerationTime;
                 currentAcceleration=nextAcceleration;
+
+                timeList.add(timePassed);
+                velocityList.add(this.currentVelocity);
             }
+
+            this.power.calculatePowerConsumption(timeList, velocityList);
         }
-//        System.out.println("{"+Double.toString(this.currentTrack.getTrainEndPosition(this))+","
-//                +Double.toString(this.currentVelocity)+"}");
     }
 
     public boolean equals(Train x)

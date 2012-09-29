@@ -10,8 +10,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Insets;
-import java.awt.font.TextAttribute;
 import java.awt.geom.AffineTransform;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -120,6 +120,18 @@ public class GraphAxes {
             if(tmpBB.yMax>dataBB.yMax) dataBB.yMax=tmpBB.yMax;
         }
 
+        List<Double> xTicks=this.getTicks(dataBB.xMax,dataBB.xMin);
+        List<Double> yTicks=this.getTicks(dataBB.yMax,dataBB.yMin);
+
+        for(double xTick: xTicks) {
+            if(dataBB.xMin>xTick) dataBB.xMin=xTick;
+            if(dataBB.xMax<xTick) dataBB.xMax=xTick;
+        }
+        for(double yTick: yTicks) {
+            if(dataBB.yMin>yTick) dataBB.yMin=yTick;
+            if(dataBB.yMax<yTick) dataBB.yMax=yTick;
+        }
+
         BoundingBox plotBB=this.getPlotArea(dim,insets);
 
         g.setClip(plotBB.xMin, plotBB.yMax, plotBB.xMax-plotBB.xMin, plotBB.yMin-plotBB.yMax);
@@ -134,8 +146,7 @@ public class GraphAxes {
         g.setColor(Color.BLACK);
         g.drawRect(plotBB.xMin, plotBB.yMax, plotBB.xMax-plotBB.xMin, plotBB.yMin-plotBB.yMax);
 
-        List<Double> xTicks=this.getTicks(dataBB.xMax,dataBB.xMin);
-        List<Double> yTicks=this.getTicks(dataBB.yMax,dataBB.yMin);
+        
         Transform xTrans=new Transform(dataBB.xMax, dataBB.xMin, plotBB.xMax, plotBB.xMin);
         Transform yTrans=new Transform(dataBB.yMax, dataBB.yMin, plotBB.yMax, plotBB.yMin);
         g.setFont(this.LABEL_FONT);
@@ -147,7 +158,7 @@ public class GraphAxes {
                 if(pos==0 || pos>=1) {
                     tickString=Integer.toString((int)Math.round(pos));
                 } else {
-                    tickString=Double.toString(pos);
+                    tickString=NumberFormat.getInstance().format(pos);
                 }
                 g.drawLine(tickPos, plotBB.yMin, tickPos, plotBB.yMin-this.TICK_LENGTH);
                 g.drawString(tickString, tickPos-fm.stringWidth(tickString)/2, plotBB.yMin+fm.getMaxAscent());
@@ -160,7 +171,7 @@ public class GraphAxes {
                 if(pos==0 || pos>=1) {
                     tickString=Integer.toString((int)Math.round(pos));
                 } else {
-                    tickString=Double.toString(pos);
+                    tickString=NumberFormat.getInstance().format(pos);
                 }
                 g.drawLine(plotBB.xMin, tickPos, plotBB.xMin+this.TICK_LENGTH, tickPos);
                 g.drawString(tickString, plotBB.xMin-fm.stringWidth(tickString), tickPos+3);

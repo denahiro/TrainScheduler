@@ -23,7 +23,7 @@ import org.freehep.swing.Headless;
 public class GraphPrinter{
 
 
-    public void print(Graph input,File output,Dimension outputDimension) throws FileNotFoundException {
+    public static void print(Graph input,File output,Dimension outputDimension) throws FileNotFoundException {
         JPanel yourPanel = new TempPanel(input,outputDimension);
 
         // run with -Djava.awt.headless=true
@@ -38,7 +38,7 @@ public class GraphPrinter{
     }
 
 
-    private class TempPanel extends JPanel {
+    private static class TempPanel extends JPanel {
         private Graph myGraph;
         public TempPanel(Graph toPrint,Dimension panelDimension) {
             this.myGraph=toPrint;
@@ -61,9 +61,6 @@ public class GraphPrinter{
                 dim.width-insets.left-insets.right,
                 dim.height-insets.top-insets.bottom);
             vg.setColor(Color.black);
-
-            System.out.println(dim);
-            System.out.println(insets);
 
             this.myGraph.draw(vg,dim,insets);
         }

@@ -9,6 +9,8 @@ import ch.sreng.schedule.components.stationary.Linkable;
 import ch.sreng.schedule.components.stationary.Station;
 import ch.sreng.schedule.components.stationary.TrackComponent;
 import ch.sreng.schedule.components.stationary.TrackSimple;
+import ch.sreng.schedule.output.EnergyGraph;
+import ch.sreng.schedule.output.Graph;
 import ch.sreng.schedule.output.GraphPrinter;
 import ch.sreng.schedule.output.TimePosGraph;
 import ch.sreng.schedule.procedure.DriveStrategy;
@@ -65,9 +67,12 @@ public class Scheduler {
         train1.setInitialConditions(tracks.get(0).getLinkTo(),station1, 0, 0);
         train2.setInitialConditions(tracks.get(0).getLinkTo(),station2, 550, 0);
 
-        TimePosGraph outGraph=new TimePosGraph(TimePosGraph.Units.LARGE);
+        Graph outGraphPos=new TimePosGraph(TimePosGraph.Units.LARGE);
+        Graph outGraphEnergy=new EnergyGraph(EnergyGraph.Units.LARGE);
 
-        Master master=new TimetableMaster(0.1,outGraph);
+        TimetableMaster master=new TimetableMaster(0.1);
+        master.addOutputGraph(outGraphPos);
+        master.addOutputGraph(outGraphEnergy);
         master.registerTrain(train1);
         master.registerTrain(train2);
 //        master.setTimeFactor(1);
@@ -78,16 +83,20 @@ public class Scheduler {
 
         PrintWriter output;
         try {
-            output = new PrintWriter(new File("tmp.dat"));
-            outGraph.saveToWriter(output);
+            output = new PrintWriter(new File("tmpPos.dat"));
+            outGraphPos.saveToWriter(output);
+            output.close();
+            output = new PrintWriter(new File("tmpEnergy.dat"));
+            outGraphEnergy.saveToWriter(output);
             output.close();
         } catch (FileNotFoundException ex) {
             System.out.println("File not here.");
         }
 
-        GraphPrinter myGraphPrinter=new GraphPrinter();
+//        GraphPrinter myGraphPrinter=new GraphPrinter();
         try {
-            myGraphPrinter.print(outGraph, new File("tmp2.emf"),new Dimension(400,300));
+            GraphPrinter.print(outGraphPos, new File("tmpPos.emf"),new Dimension(400,300));
+            GraphPrinter.print(outGraphEnergy, new File("tmpEnergy.emf"),new Dimension(400,300));
         } catch (FileNotFoundException ex) {
             System.out.println("File not written.");
         }

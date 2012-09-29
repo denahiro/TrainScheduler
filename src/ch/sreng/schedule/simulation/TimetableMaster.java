@@ -6,11 +6,8 @@
 package ch.sreng.schedule.simulation;
 
 import ch.sreng.schedule.components.mobile.Train;
-import ch.sreng.schedule.components.stationary.TrackComponent;
 import ch.sreng.schedule.output.Graph;
-import ch.sreng.schedule.procedure.SafetyStrategy;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -19,23 +16,15 @@ import java.util.List;
  */
 public class TimetableMaster implements Master{
 
-//    private ArrayList<Train> trains=new ArrayList<Train>();
-
     private FixTime timer;
 
-//    private TrackComponent originTrack;
-    private Graph output;
+    private List<Graph> outputList=new ArrayList<Graph>();
 
     private List<Train> trains=new ArrayList<Train>();
 
-//    private ArrayList<Double> times=new ArrayList<Double>();
-//    private HashMap<Train,ArrayList<Double>> trainPositions=new HashMap<Train, ArrayList<Double>>();
-//    private HashMap<Train,ArrayList<Double>> brickWallPositions=new HashMap<Train, ArrayList<Double>>();
-
-    public TimetableMaster(double timestep,Graph outputGraph)
+    public TimetableMaster(double timestep)
     {
         this.timer=new FixTime(0,timestep);
-        this.output=outputGraph;
     }
 
     public void doFrame() {
@@ -47,6 +36,10 @@ public class TimetableMaster implements Master{
         }
     }
 
+    public void addOutputGraph(Graph newOutput) {
+        this.outputList.add(newOutput);
+    }
+
     public void registerTrain(Train newTrain) {
         this.trains.add(newTrain);
     }
@@ -55,11 +48,11 @@ public class TimetableMaster implements Master{
         this.trains.remove(oldTrain);
     }
 
-    private void registerState()
-    {
-        for(Train currentTrain: this.trains)
-        {
-            this.output.registerState(this.timer.getTime(), currentTrain);
+    private void registerState() {
+        for(Train currentTrain: this.trains) {
+            for(Graph currentGraph: this.outputList) {
+                currentGraph.registerState(this.timer.getTime(), currentTrain);
+            }
         }
     }
 }

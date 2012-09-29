@@ -5,15 +5,19 @@
 
 package ch.sreng.schedule.components.mobile;
 
+import java.util.List;
+
 /**
  *
  * @author Denahiro
  */
 public interface Power {
 
-    public abstract void accelerate(double acceleration,double time);
+    public abstract void calculatePowerConsumption(List<Double> times, List<Double> velocities);
 
     public abstract double getMaxAcceleration();
 
     public abstract double getMaxDeceleration();
+
+    public abstract double getPowerConsumption();
 }
