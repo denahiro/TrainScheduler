@@ -67,7 +67,7 @@ public class Scheduler {
 //        tracks.get(tracks.size()-1).setNextLink(tracks.get(0).getLinkTo());
 
         try {
-            TrackFactory.TrackContainer track=TrackFactory.loadFile("alignmentCorridor1.csv");
+            TrackFactory.TrackContainer track=TrackFactory.loadFile("alignmentCorridor2.csv");
 
             train1.setInitialConditions(track.getFirstTrack(),track.getFirstStation(), 0, 0);
     //        train2.setInitialConditions(tracks.get(0).getLinkTo(),station2, 550, 0);
@@ -81,7 +81,7 @@ public class Scheduler {
             master.registerTrain(train1);
     //        master.registerTrain(train2);
     //        master.setTimeFactor(1);
-            for(int i=0;i<10000;i++)
+            for(int i=0;i<3000;i++)
             {
                 master.doFrame();
             }
