@@ -3,12 +3,16 @@
  */
 package ch.sreng.schedule.components.mobile;
 
+import ch.sreng.schedule.Scheduler;
 import ch.sreng.schedule.components.stationary.Station;
 import ch.sreng.schedule.components.stationary.TrackComponent;
 import ch.sreng.schedule.procedure.DriveStrategy;
 import ch.sreng.schedule.procedure.SafetyStrategy;
 import ch.sreng.schedule.simulation.Time;
 import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,21 +30,43 @@ public class Train {
     private Double departureTime;
     private Double lastDepartureTime;
     private double currentVelocity;
-    private final double maxVelocity;
-    private double length;
+    private static Double MAX_VELOCITY=null;
+    private static Double LENGTH=null;
     private DriveStrategy driveStrategy;
     private SafetyStrategy safetyStrategy;
     private Power power;
     private Color trainColor;
 
+    final private static String SOURCE_FILE="data/mobile/train.ini";
+    private static void loadIni() {
+        if(MAX_VELOCITY==null) {
+            try {
+                BufferedReader sourceReader=new BufferedReader(new InputStreamReader(Scheduler.class.getResourceAsStream(SOURCE_FILE)));
+                String currentLine=sourceReader.readLine();
+                while(currentLine!=null) {
+                    String[] splitLine=currentLine.split("=");
+                    if(splitLine[0].equalsIgnoreCase("maxVelocity")) {
+                        MAX_VELOCITY=Double.parseDouble(splitLine[1]);
+                    } else if(splitLine[0].equalsIgnoreCase("length")) {
+                        LENGTH=Double.parseDouble(splitLine[1]);
+                    }
+                    currentLine=sourceReader.readLine();
+                }
+            } catch(IOException ex) {
+                System.out.println("Unable to load \"train.ini\"");
+            }
+        }
+    }
+
     public Train(DriveStrategy myDriveStrategy, SafetyStrategy mySafetyStrategy,
-            Power myPower, double myMaxVelocity, double myLength,Color myColor)
+            Power myPower,Color myColor)
     {
+        loadIni();
         this.driveStrategy=myDriveStrategy;
         this.safetyStrategy=mySafetyStrategy;
         this.power=myPower;
-        this.maxVelocity=myMaxVelocity;
-        this.length=myLength;
+//        this.MAX_VELOCITY=myMaxVelocity;
+//        this.LENGTH=myLength;
         this.trainColor=myColor;
     }
 
@@ -60,7 +86,7 @@ public class Train {
 
     public double getLength()
     {
-        return this.length;
+        return LENGTH;
     }
 
     public double getVelocity()
@@ -80,7 +106,7 @@ public class Train {
 
     public double getMaxVelocity()
     {
-        return this.maxVelocity;
+        return MAX_VELOCITY;
     }
 
     public TrackComponent getCurrentTrack()

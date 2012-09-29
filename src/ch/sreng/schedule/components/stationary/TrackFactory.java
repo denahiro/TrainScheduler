@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -22,13 +20,13 @@ import java.util.logging.Logger;
  */
 public class TrackFactory {
 
-    final private String dataFolder="data/track/";
+    final static private String dataFolder="data/track/";
 
-    private BufferedReader getAlignmentReader(String filename) {
-        return new BufferedReader(new InputStreamReader(Scheduler.class.getResourceAsStream(this.dataFolder+filename)));
+    private static BufferedReader getAlignmentReader(String filename) {
+        return new BufferedReader(new InputStreamReader(Scheduler.class.getResourceAsStream(dataFolder+filename)));
     }
 
-    private List<List<String>> readStrings(BufferedReader myReader) throws IOException {
+    private static List<List<String>> readStrings(BufferedReader myReader) throws IOException {
         List<List<String>> outList=new ArrayList<List<String>>();
 
         //Read and dump first header
@@ -37,17 +35,40 @@ public class TrackFactory {
         myReader.readLine();
         String currentLine=myReader.readLine();
         while(currentLine!=null) {
-            outList.add(Arrays.asList(currentLine.split(";")));
+            List<String> splitLine=Arrays.asList(currentLine.split(";"));
+            if(splitLine.size()>0) {
+                outList.add(splitLine);
+            }
             currentLine=myReader.readLine();
         }
 
         return outList;
     }
 
-    private Segment parseHorizontalSegment(List<String> line) {
+    private static Segment parseHorizontalSegment(ListIterator<String> lineIt) {
         Segment out=new Segment();
+        
+        try {
+            out.beginChainage=Double.parseDouble(lineIt.next());
+        } catch(NumberFormatException ex) {}
+        try {
+            out.endChainage=Double.parseDouble(lineIt.next());
+        } catch(NumberFormatException ex) {}
+        lineIt.next();
+        out.stationName=lineIt.next();
+        if(out.stationName.isEmpty()) out.stationName=null;
+        if(lineIt.hasNext()) lineIt.next();
+        if(lineIt.hasNext()) lineIt.next();
+        try {
+            if(lineIt.hasNext()) out.maxVelocity=Double.parseDouble(lineIt.next())/3.6;
+        } catch(NumberFormatException ex) {}
+        if(lineIt.hasNext()) lineIt.next();
 
-        ListIterator<String> lineIt=line.listIterator();
+        return out;
+    }
+    
+    private static Segment parseVerticalSegment(ListIterator<String> lineIt) {
+        Segment out=new Segment();
 
         try {
             out.beginChainage=Double.parseDouble(lineIt.next());
@@ -56,65 +77,134 @@ public class TrackFactory {
             out.endChainage=Double.parseDouble(lineIt.next());
         } catch(NumberFormatException ex) {}
         if(lineIt.hasNext()) lineIt.next();
-        if(lineIt.hasNext()) out.stationName=lineIt.next();
-        if(lineIt.hasNext()) lineIt.next();
         if(lineIt.hasNext()) lineIt.next();
         try {
-            if(lineIt.hasNext()) out.maxVelocity=Double.parseDouble(lineIt.next())/3.6;
+            if(lineIt.hasNext()) out.gradient=Double.parseDouble(lineIt.next());
         } catch(NumberFormatException ex) {}
 
-        System.out.println(out);
         return out;
     }
-    private Segment parseVerticalSegment(List<String> line) {
-        if(line.size()<9) {
-            return null;
-        } else {
-            Segment out=new Segment();
 
-            ListIterator<String> lineIt=line.listIterator(8);
+    private static List<Segment> interleaveSegments(List<Segment> horizontal,List<Segment> vertical) {
+        List<Segment> out=new ArrayList<Segment>();
 
-            try {
-                out.beginChainage=Double.parseDouble(lineIt.next());
-            } catch(NumberFormatException ex) {}
-            try {
-                out.endChainage=Double.parseDouble(lineIt.next());
-            } catch(NumberFormatException ex) {}
-            if(lineIt.hasNext()) lineIt.next();
-            if(lineIt.hasNext()) lineIt.next();
-            try {
-                if(lineIt.hasNext()) out.gradient=Double.parseDouble(lineIt.next());
-            } catch(NumberFormatException ex) {}
+        ListIterator<Segment> horIt=horizontal.listIterator();
+        ListIterator<Segment> vertIt=vertical.listIterator();
+        Segment prevHor=null;
+        Segment prevVert=null;
+        Segment currentHor=horIt.next();
+        Segment currentVert=vertIt.next();
+        Segment nextHor=horIt.next();
+        Segment nextVert=vertIt.next();
 
-            System.out.println(out);
-            return out;
+        while(currentHor!=null && currentVert!=null) {
+            Segment newSegment=new Segment();
+            double tmpBegin=Double.NEGATIVE_INFINITY;
+            if(currentHor.beginChainage!=null) {
+                if(tmpBegin<currentHor.beginChainage) {
+                    tmpBegin=currentHor.beginChainage;
+                }
+            } else if (tmpBegin<prevHor.endChainage) {
+                tmpBegin=prevHor.endChainage;
+            }
+            if(tmpBegin<currentVert.beginChainage) {
+                tmpBegin=currentVert.beginChainage;
+            }
+            newSegment.beginChainage=tmpBegin;
+
+            double tmpEnd=Double.POSITIVE_INFINITY;
+            if(currentHor.endChainage!=null) {
+                if(tmpEnd>currentHor.endChainage) {
+                    tmpEnd=currentHor.endChainage;
+                }
+            } else if (tmpEnd>nextHor.beginChainage) {
+                tmpEnd=nextHor.beginChainage;
+            }
+            if(tmpEnd>currentVert.endChainage) {
+                tmpEnd=currentVert.endChainage;
+            }
+            newSegment.endChainage=tmpEnd;
+
+            //Get the maximum velocity
+            if(currentHor.maxVelocity!=null) {
+                newSegment.maxVelocity=currentHor.maxVelocity;
+            } else {
+                double tmpVelocity=0;
+                if(prevHor!=null && prevHor.maxVelocity!=null && tmpVelocity<prevHor.maxVelocity) {
+                    tmpVelocity=prevHor.maxVelocity;
+                }
+                if(nextHor!=null && nextHor.maxVelocity!=null && tmpVelocity<nextHor.maxVelocity) {
+                    tmpVelocity=nextHor.maxVelocity;
+                }
+                newSegment.maxVelocity=tmpVelocity;
+            }
+
+            //Get the gradient
+            if(currentVert.gradient!=null) {
+                newSegment.gradient=currentVert.gradient;
+            } else {
+                newSegment.gradient=(prevVert.gradient+nextVert.gradient)/2;
+            }
+
+            //Get the station name
+            newSegment.stationName=currentHor.stationName;
+
+            System.out.println(newSegment);
+
+            //Add to the output
+            out.add(newSegment);
+
+            //Advance
+            if((currentHor.endChainage==null && nextHor.beginChainage.equals(newSegment.endChainage))
+                    || (currentHor.endChainage!=null && currentHor.endChainage.equals(newSegment.endChainage))) {
+                prevHor=currentHor;
+                currentHor=nextHor;
+                if(horIt.hasNext()) {
+                    nextHor=horIt.next();
+                } else {
+                    nextHor=null;
+                }
+            }
+            if((currentVert.endChainage==null && nextVert.beginChainage.equals(newSegment.endChainage))
+                    || (currentVert.endChainage!=null && currentVert.endChainage.equals(newSegment.endChainage))) {
+                prevVert=currentVert;
+                currentVert=nextVert;
+                if(vertIt.hasNext()) {
+                    nextVert=vertIt.next();
+                } else {
+                    nextVert=null;
+                }
+            }
         }
+        return out;
     }
 
-    private List<Segment> parseAllSegments(String filename) throws IOException {
-        List<List<String>> data=this.readStrings(this.getAlignmentReader(filename));
+    private static List<Segment> parseAllSegments(String filename) throws IOException {
+        List<List<String>> data=readStrings(getAlignmentReader(filename));
 
         List<Segment> horizontalSegments=new ArrayList<Segment>();
         List<Segment> verticalSegments=new ArrayList<Segment>();
         for(List<String> line: data) {
-            horizontalSegments.add(this.parseHorizontalSegment(line));
-            Segment tmpVertSeg=this.parseVerticalSegment(line);
-            if(tmpVertSeg!=null) verticalSegments.add(tmpVertSeg);
+            System.out.println(line);
+            ListIterator<String> lineIt=line.listIterator();
+            horizontalSegments.add(parseHorizontalSegment(lineIt));
+            if(lineIt.hasNext()) verticalSegments.add(parseVerticalSegment(lineIt));
         }
 
+        List<Segment> combined=interleaveSegments(horizontalSegments,verticalSegments);
 
-        throw new UnsupportedOperationException("Not implemented yet.");
+        return combined;
     }
 
-    public void loadFile(String filename) {
+    public static void loadFile(String filename) {
         try {
-            List<Segment> segments = this.parseAllSegments(filename);
+            List<Segment> segments = parseAllSegments(filename);
         } catch (IOException ex) {
             System.out.println("Unable to open file \""+filename+"\".");
         }
     }
 
-    private class Segment {
+    private static class Segment {
         public Double beginChainage;
         public Double endChainage;
         public Double maxVelocity;
@@ -123,10 +213,10 @@ public class TrackFactory {
 
         @Override
         public String toString() {
-            return "beginChainage: "+(this.beginChainage==null?"Null":Double.toString(this.beginChainage))
-                    +";endChainage: "+(this.endChainage==null?"Null":Double.toString(this.endChainage))
-                    +";maxVelocity: "+(this.maxVelocity==null?"Null":Double.toString(this.maxVelocity))
-                    +";gradient: "+(this.gradient==null?"Null":Double.toString(this.gradient))
+            return "beginChainage: "+(this.beginChainage==null?"null":Double.toString(this.beginChainage))
+                    +";endChainage: "+(this.endChainage==null?"null":Double.toString(this.endChainage))
+                    +";maxVelocity: "+(this.maxVelocity==null?"null":Double.toString(this.maxVelocity))
+                    +";gradient: "+(this.gradient==null?"null":Double.toString(this.gradient))
                     +";stationName: "+this.stationName;
         }
     }

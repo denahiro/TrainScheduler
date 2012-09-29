@@ -5,6 +5,10 @@
 
 package ch.sreng.schedule.components.mobile;
 
+import ch.sreng.schedule.Scheduler;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -14,21 +18,51 @@ import java.util.ListIterator;
  */
 public class SimplePower implements Power {
 
-    private final double acceleration;
-    private final double deceleration;
+    private static Double ACCELERATION=null;
+    private static Double DECELERATION=null;
 
-    private final double BASE_POWER_CONSUMPTION=3000;
-    private final double TRAIN_WEIGHT=120000;
-    private final double LINEAR_DRAG_COEFF=0.25;//30000;
-    private final double QUADRATIC_DRAG_COEFF=0.004;//500;
-    private final double EFFICIENCY=0.8;
+    private static Double BASE_POWER_CONSUMPTION=null;
+    private static Double TRAIN_WEIGHT=null;
+    private static Double LINEAR_DRAG_COEFF=null;//30000;
+    private static Double QUADRATIC_DRAG_COEFF=null;//500;
+    private static Double EFFICIENCY=null;
 
-    private double currentPowerConsumption=this.BASE_POWER_CONSUMPTION;
+    private double currentPowerConsumption;
 
-    public SimplePower(double myAcceleration, double myDeceleration)
-    {
-        this.acceleration=myAcceleration;
-        this.deceleration=myDeceleration;
+    final private static String SOURCE_FILE="data/mobile/simplePower.ini";
+    private static void loadIni() {
+        if(BASE_POWER_CONSUMPTION==null) {
+            try {
+                BufferedReader sourceReader=new BufferedReader(new InputStreamReader(Scheduler.class.getResourceAsStream(SOURCE_FILE)));
+                String currentLine=sourceReader.readLine();
+                while(currentLine!=null) {
+                    String[] splitLine=currentLine.split("=");
+                    if(splitLine[0].equalsIgnoreCase("acceleration")) {
+                        ACCELERATION=Double.parseDouble(splitLine[1]);
+                    } else if(splitLine[0].equalsIgnoreCase("deceleration")) {
+                        DECELERATION=Double.parseDouble(splitLine[1]);
+                    } else if(splitLine[0].equalsIgnoreCase("basePowerConsumption")) {
+                        BASE_POWER_CONSUMPTION=Double.parseDouble(splitLine[1]);
+                    } else if(splitLine[0].equalsIgnoreCase("trainWeight")) {
+                        TRAIN_WEIGHT=Double.parseDouble(splitLine[1]);
+                    } else if(splitLine[0].equalsIgnoreCase("linearDragCoefficient")) {
+                        LINEAR_DRAG_COEFF=Double.parseDouble(splitLine[1]);
+                    } else if(splitLine[0].equalsIgnoreCase("quadraticDragCoefficient")) {
+                        QUADRATIC_DRAG_COEFF=Double.parseDouble(splitLine[1]);
+                    } else if(splitLine[0].equalsIgnoreCase("efficiency")) {
+                        EFFICIENCY=Double.parseDouble(splitLine[1]);
+                    }
+                    currentLine=sourceReader.readLine();
+                }
+            } catch(IOException ex) {
+                System.out.println("Unable to load \"simplePower.ini\"");
+            }
+        }
+    }
+
+    public SimplePower() {
+        loadIni();
+        this.currentPowerConsumption=BASE_POWER_CONSUMPTION;
     }
 
     public void calculatePowerConsumption(List<Double> times, List<Double> velocities)
@@ -44,17 +78,17 @@ public class SimplePower implements Power {
             double currentVelo=veloIt.next();
 
             if(currentTime-previousTime>0) {
-                double stepPowerConsumption=this.TRAIN_WEIGHT*this.LINEAR_DRAG_COEFF
+                double stepPowerConsumption=TRAIN_WEIGHT*LINEAR_DRAG_COEFF
                         *(currentVelo+previousVelo)/2;
 
                 double deltaV=currentVelo-previousVelo;
-                stepPowerConsumption+=this.TRAIN_WEIGHT*this.QUADRATIC_DRAG_COEFF
+                stepPowerConsumption+=TRAIN_WEIGHT*QUADRATIC_DRAG_COEFF
                         *(previousVelo*previousVelo+deltaV*previousVelo+deltaV*deltaV/3);
 
-                stepPowerConsumption+=this.TRAIN_WEIGHT*(currentVelo*currentVelo/2
+                stepPowerConsumption+=TRAIN_WEIGHT*(currentVelo*currentVelo/2
                         -previousVelo*previousVelo/2)/(currentTime-previousTime);
 
-                stepPowerConsumption*=(currentTime-previousTime)/this.EFFICIENCY;
+                stepPowerConsumption*=(currentTime-previousTime)/EFFICIENCY;
 
                 this.currentPowerConsumption+=Math.max(stepPowerConsumption,0);
             }
@@ -64,17 +98,17 @@ public class SimplePower implements Power {
         }
 
         this.currentPowerConsumption/=(previousTime-firstTime);
-        this.currentPowerConsumption+=this.BASE_POWER_CONSUMPTION;
+        this.currentPowerConsumption+=BASE_POWER_CONSUMPTION;
     }
 
     public double getMaxAcceleration()
     {
-        return this.acceleration;
+        return ACCELERATION;
     }
 
     public double getMaxDeceleration()
     {
-        return this.deceleration;
+        return DECELERATION;
     }
 
     public double getPowerConsumption() {

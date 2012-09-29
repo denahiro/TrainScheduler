@@ -13,7 +13,6 @@ import ch.sreng.schedule.components.stationary.TrackFactory;
  */
 public class FactoryTester {
     public static void main(String[] args) {
-        TrackFactory myFactory=new TrackFactory();
-        myFactory.loadFile("alignmentCorridor2.csv");
+        TrackFactory.loadFile("alignmentCorridor1.csv");
     }
 }

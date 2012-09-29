@@ -38,24 +38,24 @@ public class Scheduler {
     public static void main(String[] args) {
         DriveStrategy driveStrategy=new DriveStrategyBangBang();
         SafetyStrategy safetyStrategy=new SafetyStrategy(1, 30,0.07);
-        Train train1=new Train(driveStrategy,safetyStrategy,new SimplePower(1,1), 20,89,Color.RED);
-        Train train2=new Train(driveStrategy,safetyStrategy,new SimplePower(1,1), 20,89,Color.BLACK);
+        Train train1=new Train(driveStrategy,safetyStrategy,new SimplePower(),Color.RED);
+        Train train2=new Train(driveStrategy,safetyStrategy,new SimplePower(),Color.BLACK);
 
-        Station station1=new Station(550,10);
-        Station station2=new Station(100,30);
+        Station station1=new Station(550,10,0);
+        Station station2=new Station(100,30,0);
 
         station1.setNextStation(station2);
         station2.setNextStation(station1);
 
         ArrayList<Linkable<TrackComponent>> tracks=new ArrayList<Linkable<TrackComponent>>();
-        tracks.add(new TrackSimple(0,20));
-        tracks.add(new TrackSimple(400,20));
+        tracks.add(new TrackSimple(0,20,0));
+        tracks.add(new TrackSimple(400,20,0));
         tracks.add(station1);
 //        tracks.add(new TrackSimple(300,5));
-        tracks.add(new TrackSimple(600,15));
-        tracks.add(new TrackSimple(1000,15));
-        tracks.add(new TrackSimple(500,20));
-        tracks.add(new TrackSimple(200,10));
+        tracks.add(new TrackSimple(600,15,8));
+        tracks.add(new TrackSimple(1000,15,0));
+        tracks.add(new TrackSimple(500,20,0));
+        tracks.add(new TrackSimple(200,10,0));
 //        tracks.add(new TrackSimple(100,5));
         tracks.add(station2);
         for(int i=0;i<tracks.size()-1;i++)

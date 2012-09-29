@@ -3,7 +3,11 @@
  */
 package ch.sreng.schedule.components.stationary;
 
+import ch.sreng.schedule.Scheduler;
 import ch.sreng.schedule.components.mobile.Train;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 
 
@@ -15,15 +19,39 @@ public class Station implements Linkable<TrackComponent>{
 
     protected TrackComponent platformStretch;
     protected TrackComponent stopStretch;
-    final protected double MAX_STATION_VELOCITY=5;
-    final protected double MAX_STOP_VELOCITY=1e-3;
-    final protected double STOP_STRETCH_LENGTH=5;
-    final protected double waitTime;
+    protected static Double MAX_STATION_VELOCITY=null;
+    protected static Double STOP_STRETCH_LENGTH=null;
+    final static protected double MAX_STOP_VELOCITY=1e-3;
+    protected double waitTime;
+    private double gradient;
+
+    final private static String SOURCE_FILE="data/track/station.ini";
+    private static void loadIni() {
+        if(MAX_STATION_VELOCITY==null) {
+            try {
+                BufferedReader sourceReader=new BufferedReader(new InputStreamReader(Scheduler.class.getResourceAsStream(SOURCE_FILE)));
+                String currentLine=sourceReader.readLine();
+                while(currentLine!=null) {
+                    String[] splitLine=currentLine.split("=");
+                    if(splitLine[0].equalsIgnoreCase("maxVelocity")) {
+                        MAX_STATION_VELOCITY=Double.parseDouble(splitLine[1]);
+                    } else if(splitLine[0].equalsIgnoreCase("stopTrackLength")) {
+                        STOP_STRETCH_LENGTH=Double.parseDouble(splitLine[1]);
+                    }
+                    currentLine=sourceReader.readLine();
+                }
+            } catch(IOException ex) {
+                System.out.println("Unable to load \"station.ini\"");
+            }
+        }
+    }
 
     private Station nextStation;
 
-    public Station(double chainage, double myWaitTime) {
-        this.platformStretch=new TrackSimple(chainage, this.MAX_STATION_VELOCITY);
+    public Station(double chainage, double myWaitTime,double myGradient) {
+        loadIni();
+        this.gradient=myGradient;
+        this.platformStretch=new TrackSimple(chainage, MAX_STATION_VELOCITY,this.gradient);
         this.waitTime=myWaitTime;
     }
 
@@ -35,7 +63,7 @@ public class Station implements Linkable<TrackComponent>{
         TrackComponent nextTrack=next.getLinkTo();
         this.stopStretch=new TrackStopper(this, nextTrack.getChainage()
                 -Math.signum(nextTrack.getChainage()-this.platformStretch.getChainage())
-                *this.STOP_STRETCH_LENGTH, this.MAX_STATION_VELOCITY);
+                *STOP_STRETCH_LENGTH, MAX_STATION_VELOCITY,this.gradient);
 //        System.out.println(this.stopStretch.getChainage());
         this.platformStretch.setNextLink(this.stopStretch.getLinkTo());
         this.stopStretch.setNextLink(nextTrack);
@@ -50,7 +78,7 @@ public class Station implements Linkable<TrackComponent>{
     }
 
     public boolean arrived(Train requester) {
-        return requester.getCurrentTrack()==this.platformStretch && requester.getVelocity()<=this.MAX_STOP_VELOCITY;
+        return requester.getCurrentTrack()==this.platformStretch && requester.getVelocity()<=MAX_STOP_VELOCITY;
     }
 
     public double getWaitTime() {
@@ -60,8 +88,8 @@ public class Station implements Linkable<TrackComponent>{
     protected class TrackStopper extends TrackSimple {
         private Station master;
 
-        public TrackStopper(Station myMaster,double myChainage, double myMaxVelocity) {
-            super(myChainage, myMaxVelocity);
+        public TrackStopper(Station myMaster,double myChainage, double myMaxVelocity, double myGradient) {
+            super(myChainage, myMaxVelocity,myGradient);
             this.master=myMaster;
         }
 

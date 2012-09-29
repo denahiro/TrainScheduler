@@ -1,11 +1,17 @@
 package ch.sreng.schedule.components.stationary;
 
+import ch.sreng.schedule.Scheduler;
 import ch.sreng.schedule.components.mobile.Train;
 import java.awt.Graphics;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.TreeMap;
 
 /**
  * @author koenigst
@@ -14,19 +20,43 @@ import java.util.List;
 public class TrackSimple implements TrackComponent{
 
     private TrackComponent nextTrack;
-
     private double maxVelocity;
-
+    private double gradient;
     private double length;
-
     private double chainage;
-
+    
     private HashMap<Train,Double> trainEndpositions=new HashMap<Train, Double>();
 
-    public TrackSimple(double myChainage,double myVelocity)
+    private static TreeMap<Double,Double> gradientMaxVelocity=null;
+    final private static String SOURCE_FILE="data/track/gradientLimit.csv";
+    private void limitVelocity() {
+        if(gradientMaxVelocity==null) {
+            try {
+                    gradientMaxVelocity=new TreeMap<Double, Double>();
+                    BufferedReader sourceReader=new BufferedReader(new InputStreamReader(Scheduler.class.getResourceAsStream(SOURCE_FILE)));
+                    String currentLine=sourceReader.readLine();
+                    while(currentLine!=null) {
+                        String[] splitLine=currentLine.split(";");
+                        gradientMaxVelocity.put(Double.parseDouble(splitLine[0]),Double.parseDouble(splitLine[1]));
+                        currentLine=sourceReader.readLine();
+                    }
+            } catch(IOException ex) {
+                System.out.println("Unable to load \"trackSimple.csv\"");
+            }
+        }
+        for(Double key: gradientMaxVelocity.keySet()) {
+            if(key<this.gradient && gradientMaxVelocity.get(key)<this.maxVelocity) {
+                this.maxVelocity=gradientMaxVelocity.get(key);
+            }
+        }
+    }
+
+    public TrackSimple(double myChainage,double myVelocity,double myGradient)
     {
+        this.gradient=myGradient;
         this.chainage=myChainage;
         this.maxVelocity=myVelocity;
+        this.limitVelocity();
     }
 
     public TrackComponent getNextTrack(Train requester)
