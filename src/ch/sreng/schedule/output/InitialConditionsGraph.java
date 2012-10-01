@@ -24,9 +24,10 @@ import java.util.List;
 public class InitialConditionsGraph extends Graph {
 
     private Double headway=null;
-    private Double lastTime=null;
+    private Double lastTimeDeploy=null;
 
     private double lastVelocity;
+    private double lastTime;
 
     private List<DataPoint> initialConditions=new ArrayList<DataPoint>();
 
@@ -35,28 +36,31 @@ public class InitialConditionsGraph extends Graph {
     }
 
     public void registerState(double time, Train toRegister) {
-        if(this.lastTime==null || this.lastTime+this.headway<=time) {
+        if(this.lastTimeDeploy==null || this.lastTimeDeploy+this.headway<=time) {
             this.initialConditions.add(new DataPoint(time,toRegister.getCurrentTrack()
                 ,toRegister.getTargetStation(),toRegister.getPositionOnCurrentTrack()
                 ,toRegister.getVelocity()));
-            this.lastTime=time;
+            this.lastTimeDeploy=time;
         }
         this.lastVelocity=toRegister.getVelocity();
+        this.lastTime=time;
     }
 
     public void initialiseTrains(Master myMaster) {
         Color tmpColor=Color.RED;
         Double tmpVelocity=this.lastVelocity;
         for(DataPoint p:this.initialConditions) {
-            Train tmpTrain=new Train(new DriveStrategyBangBang(), new SafetyStrategy()
-                , new SimplePower(), tmpColor);
-            if(tmpVelocity==null) {
-                tmpVelocity=p.velocity;
+            if(this.lastTime-p.time>0.5*this.headway) {
+                Train tmpTrain=new Train(new DriveStrategyBangBang(), new SafetyStrategy()
+                    , new SimplePower(), tmpColor);
+                if(tmpVelocity==null) {
+                    tmpVelocity=p.velocity;
+                }
+                tmpTrain.setInitialConditions(p.currentTrack, p.nextStation, p.position, tmpVelocity);
+                myMaster.registerTrain(tmpTrain);
+                tmpColor=Color.BLACK;
+                tmpVelocity=null;
             }
-            tmpTrain.setInitialConditions(p.currentTrack, p.nextStation, p.position, tmpVelocity);
-            myMaster.registerTrain(tmpTrain);
-            tmpColor=Color.BLACK;
-            tmpVelocity=null;
         }
     }
 
