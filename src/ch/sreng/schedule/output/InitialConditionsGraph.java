@@ -26,6 +26,8 @@ public class InitialConditionsGraph extends Graph {
     private Double headway=null;
     private Double lastTime=null;
 
+    private double lastVelocity;
+
     private List<DataPoint> initialConditions=new ArrayList<DataPoint>();
 
     public InitialConditionsGraph(double myHeadways) {
@@ -39,17 +41,27 @@ public class InitialConditionsGraph extends Graph {
                 ,toRegister.getVelocity()));
             this.lastTime=time;
         }
+        this.lastVelocity=toRegister.getVelocity();
     }
 
     public void initialiseTrains(Master myMaster) {
         Color tmpColor=Color.RED;
+        Double tmpVelocity=this.lastVelocity;
         for(DataPoint p:this.initialConditions) {
             Train tmpTrain=new Train(new DriveStrategyBangBang(), new SafetyStrategy()
-                    , new SimplePower(), tmpColor);
-            tmpTrain.setInitialConditions(p.currentTrack, p.nextStation, p.position, p.velocity);
+                , new SimplePower(), tmpColor);
+            if(tmpVelocity==null) {
+                tmpVelocity=p.velocity;
+            }
+            tmpTrain.setInitialConditions(p.currentTrack, p.nextStation, p.position, tmpVelocity);
             myMaster.registerTrain(tmpTrain);
             tmpColor=Color.BLACK;
+            tmpVelocity=null;
         }
+    }
+
+    public double getLastVelocity(){
+        return this.lastVelocity;
     }
 
     public void saveToWriter(PrintWriter output) {

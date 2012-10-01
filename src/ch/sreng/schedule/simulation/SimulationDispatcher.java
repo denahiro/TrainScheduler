@@ -157,22 +157,28 @@ public class SimulationDispatcher {
     private static void initialiseTrains(Master targetMaster,TrackFactory.TrackContainer track
             ,double timeStep,double headway) {
 
-        TimetableMaster headwayMaster=new TimetableMaster(timeStep);
+        InitialConditionsGraph initGraph=null;
+        double initialVelocity=0;
+        for(int i=0;i<2;++i) {
+            TimetableMaster headwayMaster=new TimetableMaster(timeStep);
 
-        Train trainDummy=new Train(new DriveStrategyBangBang(), new SafetyStrategy(), new SimplePower(), Color.RED);
-        trainDummy.setInitialConditions(track.getFirstTrack(), track.getFirstStation(), 0, 0);
-        headwayMaster.registerTrain(trainDummy);
+            Train trainDummy=new Train(new DriveStrategyBangBang(), new SafetyStrategy(), new SimplePower(), Color.RED);
+            trainDummy.setInitialConditions(track.getFirstTrack(), track.getFirstStation(), 0, initialVelocity);
+            headwayMaster.registerTrain(trainDummy);
 
-        InitialConditionsGraph initGraph=new InitialConditionsGraph(headway);
-        headwayMaster.addOutputGraph(initGraph);
+            initGraph=new InitialConditionsGraph(headway);
+            headwayMaster.addOutputGraph(initGraph);
 
-        TrackComponent lastTrack=track.getFirstTrack();
-        while(trainDummy.getCurrentTrack()!=track.getFirstTrack() || lastTrack==track.getFirstTrack()) {
-            lastTrack=trainDummy.getCurrentTrack();
-            headwayMaster.doFrame();
+            TrackComponent lastTrack=track.getFirstTrack();
+            while(trainDummy.getCurrentTrack()!=track.getFirstTrack() || lastTrack==track.getFirstTrack()) {
+                lastTrack=trainDummy.getCurrentTrack();
+                headwayMaster.doFrame();
+            }
+
+            initialVelocity=initGraph.getLastVelocity();
+
+            trainDummy.remove();
         }
-
-        trainDummy.remove();
 
         initGraph.initialiseTrains(targetMaster);
     }

@@ -23,17 +23,17 @@ import java.util.ListIterator;
  */
 public class Train {
 
-    private TrackComponent currentTrack;
-    private Station targetStation;
-    private Double departureTime;
-    private Double lastDepartureTime;
+    private TrackComponent currentTrack=null;
+    private Station targetStation=null;
+    private Double departureTime=null;
+    private Double lastDepartureTime=null;
     private double currentVelocity;
     private static Double MAX_VELOCITY=null;
     private static Double LENGTH=null;
-    private DriveStrategy driveStrategy;
-    private SafetyStrategy safetyStrategy;
-    private Power power;
-    private Color trainColor;
+    private DriveStrategy driveStrategy=null;
+    private SafetyStrategy safetyStrategy=null;
+    private Power power=null;
+    private Color trainColor=null;
 
     final private static String SOURCE_FILE="data/mobile/train.ini";
     private static void loadIni() {
@@ -70,6 +70,9 @@ public class Train {
             ,double initialPosition,double initialVelocity)
     {
         this.currentVelocity=initialVelocity;
+        if(this.currentTrack!=null) {
+            this.remove();
+        }
         this.currentTrack=initialTrack;
         this.setPosition(initialPosition);
         this.targetStation=initialTargetStation;

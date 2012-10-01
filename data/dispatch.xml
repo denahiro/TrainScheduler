@@ -8,10 +8,10 @@
             <timePosGraph>
                 <units>Large</units>
                 <dataOutput>
-                    <filename>output/corridor2TimePos.csv</filename>
+                    <filename>output/corridor2TimePos2Minute.csv</filename>
                 </dataOutput>
                 <imageOutput>
-                    <filename>output/corridor2TimePos.emf</filename>
+                    <filename>output/corridor2TimePos2Minute.emf</filename>
                     <height>300</height>
                     <width>400</width>
                 </imageOutput>
@@ -19,10 +19,10 @@
             <energyGraph>
                 <units>Large</units>
                 <dataOutput>
-                    <filename>output/corridor2Energy.csv</filename>
+                    <filename>output/corridor2Energy2Minute.csv</filename>
                 </dataOutput>
                 <imageOutput>
-                    <filename>output/corridor2Energy.emf</filename>
+                    <filename>output/corridor2Energy2Minute.emf</filename>
                     <height>300</height>
                     <width>400</width>
                 </imageOutput>
@@ -32,16 +32,16 @@
     <task>
         <trackFile>alignmentCorridor2.csv</trackFile>
         <timeStep>1</timeStep>
-        <headway>100</headway>
+        <headway>180</headway>
         <finalTime>3000</finalTime>
         <graphs>
             <timePosGraph>
                 <units>Large</units>
                 <dataOutput>
-                    <filename>output/corridor2TimePosFast.csv</filename>
+                    <filename>output/corridor2TimePos3Minute.csv</filename>
                 </dataOutput>
                 <imageOutput>
-                    <filename>output/corridor2TimePosFast.emf</filename>
+                    <filename>output/corridor2TimePos3Minute.emf</filename>
                     <height>300</height>
                     <width>400</width>
                 </imageOutput>
@@ -49,10 +49,40 @@
             <energyGraph>
                 <units>Large</units>
                 <dataOutput>
-                    <filename>output/corridor2EnergyFast.csv</filename>
+                    <filename>output/corridor2Energy3Minute.csv</filename>
                 </dataOutput>
                 <imageOutput>
-                    <filename>output/corridor2EnergyFast.emf</filename>
+                    <filename>output/corridor2Energy3Minute.emf</filename>
+                    <height>300</height>
+                    <width>400</width>
+                </imageOutput>
+            </energyGraph>
+        </graphs>
+    </task>
+    <task>
+        <trackFile>alignmentCorridor2.csv</trackFile>
+        <timeStep>1</timeStep>
+        <headway>300</headway>
+        <finalTime>3000</finalTime>
+        <graphs>
+            <timePosGraph>
+                <units>Large</units>
+                <dataOutput>
+                    <filename>output/corridor2TimePos5Minute.csv</filename>
+                </dataOutput>
+                <imageOutput>
+                    <filename>output/corridor2TimePos5Minute.emf</filename>
+                    <height>300</height>
+                    <width>400</width>
+                </imageOutput>
+            </timePosGraph>
+            <energyGraph>
+                <units>Large</units>
+                <dataOutput>
+                    <filename>output/corridor2Energy5Minute.csv</filename>
+                </dataOutput>
+                <imageOutput>
+                    <filename>output/corridor2Energy5Minute.emf</filename>
                     <height>300</height>
                     <width>400</width>
                 </imageOutput>
