@@ -35,5 +35,7 @@ public interface TrackComponent extends Linkable<TrackComponent>{
 
     public abstract List<Train> getOtherTrains(Train requester);
 
-    public abstract boolean setMyPosition(Train requester, double position);
+    public abstract boolean setTrainPosition(Train requester, double position);
+
+    public abstract void removeTrain(Train requester);
 }

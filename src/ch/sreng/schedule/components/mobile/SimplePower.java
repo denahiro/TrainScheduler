@@ -5,11 +5,9 @@
 
 package ch.sreng.schedule.components.mobile;
 
-import ch.sreng.schedule.Scheduler;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 import java.util.ListIterator;
 

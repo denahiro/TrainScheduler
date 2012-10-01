@@ -207,14 +207,22 @@ public class Train {
         return this.currentTrack.getAbsoluteTrainEndPosition(this);
     }
 
+    public double getPositionOnCurrentTrack(){
+        return this.currentTrack.getTrainEndPosition(this);
+    }
+
     public SafetyStrategy getSafetyStrategy()
     {
         return this.safetyStrategy;
     }
 
+    public void remove() {
+        this.currentTrack.removeTrain(this);
+    }
+
     private void setPosition(double newPosition)
     {
-        while(!this.currentTrack.setMyPosition(this, newPosition))
+        while(!this.currentTrack.setTrainPosition(this, newPosition))
         {
             newPosition-=this.currentTrack.getLength(this);
             this.currentTrack=this.currentTrack.getNextTrack(this);

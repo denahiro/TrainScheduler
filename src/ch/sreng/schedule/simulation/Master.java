@@ -19,4 +19,5 @@ public interface Master {
 
     void unregisterTrain(Train oldTrain);
 
+    double getTime();
 }

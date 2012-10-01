@@ -111,7 +111,7 @@ public class TrackSimple implements TrackComponent{
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public boolean setMyPosition(Train requester, double position)
+    public boolean setTrainPosition(Train requester, double position)
     {
         if(position<this.length)
         {
@@ -123,6 +123,10 @@ public class TrackSimple implements TrackComponent{
             this.trainEndpositions.remove(requester);
             return false;
         }
+    }
+
+    public void removeTrain(Train requester){
+        this.trainEndpositions.remove(requester);
     }
 
     public double getAbsoluteTrainEndPosition(Train requester) {

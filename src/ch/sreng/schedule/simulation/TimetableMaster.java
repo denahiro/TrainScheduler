@@ -27,6 +27,10 @@ public class TimetableMaster implements Master{
         this.timer=new FixTime(0,timestep);
     }
 
+    public double getTime() {
+        return this.timer.getTime();
+    }
+
     public void doFrame() {
         this.registerState();
         this.timer.advanceTime();
