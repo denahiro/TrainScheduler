@@ -169,9 +169,14 @@ public class SimulationDispatcher {
             initGraph=new InitialConditionsGraph(headway);
             headwayMaster.addOutputGraph(initGraph);
 
-            TrackComponent lastTrack=track.getFirstTrack();
-            while(trainDummy.getCurrentTrack()!=track.getFirstTrack() || lastTrack==track.getFirstTrack()) {
-                lastTrack=trainDummy.getCurrentTrack();
+            boolean leftBegin=false;
+            while((trainDummy.getCurrentTrack()!=track.getFirstTrack()
+                    && trainDummy.getCurrentTrack()!=track.getFirstTrack().getNextTrack(trainDummy)) || leftBegin==false) {
+
+                if(trainDummy.getCurrentTrack()!=track.getFirstTrack()
+                    && trainDummy.getCurrentTrack()!=track.getFirstTrack().getNextTrack(trainDummy)) {
+                    leftBegin=true;
+                }
                 headwayMaster.doFrame();
             }
 

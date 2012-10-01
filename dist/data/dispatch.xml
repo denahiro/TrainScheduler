@@ -1,5 +1,96 @@
 <root>
     <task>
+        <trackFile>alignmentCorridor1.csv</trackFile>
+        <timeStep>1</timeStep>
+        <headway>120</headway>
+        <finalTime>10000</finalTime>
+        <graphs>
+            <timePosGraph>
+                <units>Large</units>
+                <dataOutput>
+                    <filename>output/corridor1TimePos2Minute.csv</filename>
+                </dataOutput>
+                <imageOutput>
+                    <filename>output/corridor1TimePos2Minute.emf</filename>
+                    <height>500</height>
+                    <width>800</width>
+                </imageOutput>
+            </timePosGraph>
+            <energyGraph>
+                <units>Large</units>
+                <dataOutput>
+                    <filename>output/corridor1Energy2Minute.csv</filename>
+                </dataOutput>
+                <imageOutput>
+                    <filename>output/corridor1Energy2Minute.emf</filename>
+                    <height>500</height>
+                    <width>800</width>
+                </imageOutput>
+            </energyGraph>
+        </graphs>
+    </task>
+    <task>
+        <trackFile>alignmentCorridor1.csv</trackFile>
+        <timeStep>1</timeStep>
+        <headway>180</headway>
+        <finalTime>10000</finalTime>
+        <graphs>
+            <timePosGraph>
+                <units>Large</units>
+                <dataOutput>
+                    <filename>output/corridor1TimePos3Minute.csv</filename>
+                </dataOutput>
+                <imageOutput>
+                    <filename>output/corridor1TimePos3Minute.emf</filename>
+                    <height>500</height>
+                    <width>800</width>
+                </imageOutput>
+            </timePosGraph>
+            <energyGraph>
+                <units>Large</units>
+                <dataOutput>
+                    <filename>output/corridor1Energy3Minute.csv</filename>
+                </dataOutput>
+                <imageOutput>
+                    <filename>output/corridor1Energy3Minute.emf</filename>
+                    <height>500</height>
+                    <width>800</width>
+                </imageOutput>
+            </energyGraph>
+        </graphs>
+    </task>
+    <task>
+        <trackFile>alignmentCorridor1.csv</trackFile>
+        <timeStep>1</timeStep>
+        <headway>300</headway>
+        <finalTime>10000</finalTime>
+        <graphs>
+            <timePosGraph>
+                <units>Large</units>
+                <dataOutput>
+                    <filename>output/corridor1TimePos5Minute.csv</filename>
+                </dataOutput>
+                <imageOutput>
+                    <filename>output/corridor1TimePos5Minute.emf</filename>
+                    <height>500</height>
+                    <width>800</width>
+                </imageOutput>
+            </timePosGraph>
+            <energyGraph>
+                <units>Large</units>
+                <dataOutput>
+                    <filename>output/corridor1Energy5Minute.csv</filename>
+                </dataOutput>
+                <imageOutput>
+                    <filename>output/corridor1Energy5Minute.emf</filename>
+                    <height>500</height>
+                    <width>800</width>
+                </imageOutput>
+            </energyGraph>
+        </graphs>
+    </task>
+
+    <task>
         <trackFile>alignmentCorridor2.csv</trackFile>
         <timeStep>1</timeStep>
         <headway>120</headway>
@@ -12,8 +103,8 @@
                 </dataOutput>
                 <imageOutput>
                     <filename>output/corridor2TimePos2Minute.emf</filename>
-                    <height>300</height>
-                    <width>400</width>
+                    <height>500</height>
+                    <width>800</width>
                 </imageOutput>
             </timePosGraph>
             <energyGraph>
@@ -23,8 +114,38 @@
                 </dataOutput>
                 <imageOutput>
                     <filename>output/corridor2Energy2Minute.emf</filename>
-                    <height>300</height>
-                    <width>400</width>
+                    <height>500</height>
+                    <width>800</width>
+                </imageOutput>
+            </energyGraph>
+        </graphs>
+    </task>
+    <task>
+        <trackFile>alignmentCorridor2.csv</trackFile>
+        <timeStep>1</timeStep>
+        <headway>180</headway>
+        <finalTime>3000</finalTime>
+        <graphs>
+            <timePosGraph>
+                <units>Large</units>
+                <dataOutput>
+                    <filename>output/corridor2TimePos3Minute.csv</filename>
+                </dataOutput>
+                <imageOutput>
+                    <filename>output/corridor2TimePos3Minute.emf</filename>
+                    <height>500</height>
+                    <width>800</width>
+                </imageOutput>
+            </timePosGraph>
+            <energyGraph>
+                <units>Large</units>
+                <dataOutput>
+                    <filename>output/corridor2Energy3Minute.csv</filename>
+                </dataOutput>
+                <imageOutput>
+                    <filename>output/corridor2Energy3Minute.emf</filename>
+                    <height>500</height>
+                    <width>800</width>
                 </imageOutput>
             </energyGraph>
         </graphs>
@@ -42,8 +163,8 @@
                 </dataOutput>
                 <imageOutput>
                     <filename>output/corridor2TimePos5Minute.emf</filename>
-                    <height>300</height>
-                    <width>400</width>
+                    <height>500</height>
+                    <width>800</width>
                 </imageOutput>
             </timePosGraph>
             <energyGraph>
@@ -53,8 +174,8 @@
                 </dataOutput>
                 <imageOutput>
                     <filename>output/corridor2Energy5Minute.emf</filename>
-                    <height>300</height>
-                    <width>400</width>
+                    <height>500</height>
+                    <width>800</width>
                 </imageOutput>
             </energyGraph>
         </graphs>

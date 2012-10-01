@@ -187,7 +187,7 @@ public class DriveStrategyBangBang implements DriveStrategy {
                         currentPosition=nextDistance-requester.getLength();
                     }
                 } else {//If no braking is required
-                    if(accelerationDistance<nextDistance) {
+                    if(accelerationDistance+currentPosition<nextDistance) {
                         returnList.add(new AccelerationAtTime(currentTime+accelerationTime, 0));
                         currentVelocity+=accelerationTime*requester.getMaxAcceleration();
                         currentTime+=accelerationTime+(nextDistance-currentPosition

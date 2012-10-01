@@ -123,13 +123,17 @@ public class GraphAxes {
         List<Double> xTicks=this.getTicks(dataBB.xMax,dataBB.xMin);
         List<Double> yTicks=this.getTicks(dataBB.yMax,dataBB.yMin);
 
-        for(double xTick: xTicks) {
+        ListIterator<Double> it=xTicks.listIterator();
+        while(it.hasNext()) {
+            Double xTick=it.next();
             if(dataBB.xMin>xTick) dataBB.xMin=xTick;
-            if(dataBB.xMax<xTick) dataBB.xMax=xTick;
+            if(dataBB.xMax<xTick) it.remove();
         }
-        for(double yTick: yTicks) {
+        it=yTicks.listIterator();
+        while(it.hasNext()) {
+            Double yTick=it.next();
             if(dataBB.yMin>yTick) dataBB.yMin=yTick;
-            if(dataBB.yMax<yTick) dataBB.yMax=yTick;
+            if(dataBB.yMax<yTick) it.remove();
         }
 
         BoundingBox plotBB=this.getPlotArea(dim,insets);
