@@ -9,12 +9,6 @@ import ch.sreng.schedule.components.mobile.Train;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.io.PrintWriter;
-//import java.util.ArrayList;
-//import java.util.Collection;
-//import java.util.HashMap;
-//import java.util.Iterator;
-//import java.util.List;
-//import java.util.ListIterator;
 import org.freehep.graphics2d.VectorGraphics;
 
 /**

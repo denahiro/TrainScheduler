@@ -42,7 +42,7 @@ public class SafetyStrategy {
         }
     }
 
-    public SafetyStrategy(/*double myReactionTime, double myMinimalDistance,double myTravelTimeSafetyFactor*/)
+    public SafetyStrategy()
     {
         loadIni();
     }
@@ -52,7 +52,7 @@ public class SafetyStrategy {
      * @return Returns the brick wall distance calculated from the end of the train without the train length.
      */
     final public double brickWallDistance(Train requester,double currentVelocity){
-        return /*requester.getLength()+*/MINIMAL_DISTANCE+currentVelocity*REACTION_TIME+
+        return MINIMAL_DISTANCE+currentVelocity*REACTION_TIME+
                 0.5*currentVelocity*currentVelocity*requester.getMaxDeceleration();
     }
 

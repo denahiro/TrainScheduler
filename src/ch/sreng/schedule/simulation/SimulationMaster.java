@@ -19,7 +19,6 @@ public class SimulationMaster implements Master {
     private double frameRate=20;
 
     private ArrayList<Train> trains=new ArrayList<Train>();
-    private ArrayList<TrackComponent> tracks;
 
     public double getTime() {
         return this.timer.getTime();

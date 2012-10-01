@@ -3,12 +3,10 @@
  */
 package ch.sreng.schedule.components.stationary;
 
-import ch.sreng.schedule.Scheduler;
 import ch.sreng.schedule.components.mobile.Train;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 
 
@@ -66,7 +64,6 @@ public class Station implements Linkable<TrackComponent>{
         this.stopStretch=new TrackStopper(this, nextTrack.getChainage()
                 -Math.signum(nextTrack.getChainage()-this.platformStretch.getChainage())
                 *STOP_STRETCH_LENGTH, MAX_STATION_VELOCITY,this.gradient);
-//        System.out.println(this.stopStretch.getChainage());
         this.platformStretch.setNextLink(this.stopStretch.getLinkTo());
         this.stopStretch.setNextLink(nextTrack);
     }

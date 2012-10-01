@@ -17,10 +17,8 @@ import java.util.logging.Logger;
 public class TestDispatcher {
 
     public static void main(String[] args) {
-        SimulationDispatcher disp;
         try {
-            disp = new SimulationDispatcher("data/dispatch.xml");
-            disp.run();
+            SimulationDispatcher.run("data/dispatch.xml");
         } catch (IOException ex) {
             Logger.getLogger(TestDispatcher.class.getName()).log(Level.SEVERE, null, ex);
         }

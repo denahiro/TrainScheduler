@@ -9,7 +9,6 @@ import ch.sreng.schedule.components.mobile.Train;
 import java.awt.Color;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;

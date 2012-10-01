@@ -11,10 +11,10 @@ package ch.sreng.schedule.simulation;
  */
 public interface Time {
 
-    void advanceTime();
+    public abstract void advanceTime();
 
-    double getDeltaTime();
+    public abstract double getDeltaTime();
 
-    double getTime();
+    public abstract double getTime();
 
 }

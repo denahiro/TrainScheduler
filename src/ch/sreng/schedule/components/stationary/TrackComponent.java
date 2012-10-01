@@ -12,13 +12,6 @@ import java.util.List;
  */
 public interface TrackComponent extends Linkable<TrackComponent>{
 	
-//	protected Hashtable<Train, Double> trainPositions=new Hashtable<Train,Double>();
-	
-//	public void move(Train requester, double distanceTravelled)
-//	{
-//		
-//	}
-	
     public abstract double getMaxVelocity(Train requester);
 
     public abstract TrackComponent getNextTrack(Train requester);

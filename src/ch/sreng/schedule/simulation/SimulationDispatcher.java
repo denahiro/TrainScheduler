@@ -40,18 +40,15 @@ import org.xml.sax.SAXException;
  */
 public class SimulationDispatcher {
 
-//    private List<TimetableMaster> myMasters=new ArrayList<TimetableMaster>();
-//    private List<graphContainer> myGraphs=new ArrayList<graphContainer>();
-    private Document dispatchFile;
-
-    public SimulationDispatcher(String dispatchFilename) throws IOException {
+    public static void run(String dispatchFilename) throws IOException {
         try {
-            this.dispatchFile = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+            Document dispatchFile = DocumentBuilderFactory.newInstance().newDocumentBuilder()
                     .parse(new File(dispatchFilename));
-//            NodeList tasks=dispatchFile.getElementsByTagName("Task");
-//            for(int i=0;i<tasks.getLength();++i) {
-//                this.parseTask(tasks.item(i));
-//            }
+
+            NodeList tasks=dispatchFile.getElementsByTagName("task");
+            for(int i=0;i<tasks.getLength();++i) {
+                doTask(tasks.item(i));
+            }
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(SimulationDispatcher.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SAXException ex) {
@@ -59,14 +56,7 @@ public class SimulationDispatcher {
         }
     }
 
-    public void run() throws IOException {
-        NodeList tasks=dispatchFile.getElementsByTagName("task");
-        for(int i=0;i<tasks.getLength();++i) {
-            this.parseTask(tasks.item(i));
-        }
-    }
-
-    private void parseTask(Node task) throws IOException {
+    private static void doTask(Node task) throws IOException {
         if(task.getNodeType()==Node.ELEMENT_NODE) {
             Element element=(Element) task;
 
@@ -85,7 +75,7 @@ public class SimulationDispatcher {
             NodeList graphNodes=element.getElementsByTagName("graphs");
             List<GraphContainer> graphContainers=new ArrayList<GraphContainer>();
             for(int i=0;i<graphNodes.getLength();++i) {
-                graphContainers.addAll(this.parseGraphs(graphNodes.item(i), newMaster));
+                graphContainers.addAll(parseGraphs(graphNodes.item(i), newMaster));
             }
 
             double finalTime=Double.parseDouble(element.getElementsByTagName("finalTime").item(0).getFirstChild().getNodeValue());
@@ -100,7 +90,7 @@ public class SimulationDispatcher {
         }
     }
 
-    private List<GraphContainer> parseGraphs(Node gNode,TimetableMaster master) {
+    private static List<GraphContainer> parseGraphs(Node gNode,TimetableMaster master) {
         List<GraphContainer> returnGraphs=new ArrayList<GraphContainer>();
         if(gNode.getNodeType()==Node.ELEMENT_NODE) {
             Element graphElement=(Element) gNode;
@@ -117,7 +107,7 @@ public class SimulationDispatcher {
                         tmpGraph=new TimePosGraph();
                     }
                     master.addOutputGraph(tmpGraph);
-                    returnGraphs.add(this.generateContainer(timePosElement,tmpGraph));
+                    returnGraphs.add(generateContainer(timePosElement,tmpGraph));
                 }
             }
             NodeList energyGraphNodes=graphElement.getElementsByTagName("energyGraph");
@@ -133,14 +123,14 @@ public class SimulationDispatcher {
                         tmpGraph=new EnergyGraph();
                     }
                     master.addOutputGraph(tmpGraph);
-                    returnGraphs.add(this.generateContainer(energyElement,tmpGraph));
+                    returnGraphs.add(generateContainer(energyElement,tmpGraph));
                 }
             }
         }
         return returnGraphs;
     }
 
-    private GraphContainer generateContainer(Element myDOMElement,Graph myGraph) {
+    private static GraphContainer generateContainer(Element myDOMElement,Graph myGraph) {
         GraphContainer newContainer=new GraphContainer(myGraph);
 
         NodeList dataNodes=myDOMElement.getElementsByTagName("dataOutput");
@@ -187,7 +177,7 @@ public class SimulationDispatcher {
         initGraph.initialiseTrains(targetMaster);
     }
 
-    private class GraphContainer {
+    private static class GraphContainer {
 
         private Graph graph;
 

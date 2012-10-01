@@ -22,8 +22,8 @@ public class SimplePower implements Power {
 
     private static Double BASE_POWER_CONSUMPTION=null;
     private static Double TRAIN_WEIGHT=null;
-    private static Double LINEAR_DRAG_COEFF=null;//30000;
-    private static Double QUADRATIC_DRAG_COEFF=null;//500;
+    private static Double LINEAR_DRAG_COEFF=null;
+    private static Double QUADRATIC_DRAG_COEFF=null;
     private static Double EFFICIENCY=null;
 
     private double currentPowerConsumption;

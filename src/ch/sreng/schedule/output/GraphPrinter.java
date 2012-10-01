@@ -26,7 +26,6 @@ public class GraphPrinter{
     public static void print(Graph input,File output,Dimension outputDimension) throws FileNotFoundException {
         JPanel yourPanel = new TempPanel(input,outputDimension);
 
-        // run with -Djava.awt.headless=true
         Headless headless = new Headless(yourPanel);
         headless.pack();
         headless.setVisible(true);

@@ -52,7 +52,7 @@ public class RealTime implements Time {
         long elapsedTime=System.currentTimeMillis()-this.lastSystemTime;
         if(elapsedTime<Math.round(1000/maxRate)) {
             try {
-                Thread.currentThread().sleep(Math.round(1000/maxRate-elapsedTime));
+                Thread.sleep(Math.round(1000/maxRate-elapsedTime));
             }
             catch(InterruptedException e) {
                 

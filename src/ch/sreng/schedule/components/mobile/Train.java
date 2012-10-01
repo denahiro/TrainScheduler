@@ -3,7 +3,6 @@
  */
 package ch.sreng.schedule.components.mobile;
 
-import ch.sreng.schedule.Scheduler;
 import ch.sreng.schedule.components.stationary.Station;
 import ch.sreng.schedule.components.stationary.TrackComponent;
 import ch.sreng.schedule.procedure.DriveStrategy;
@@ -13,7 +12,6 @@ import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +24,6 @@ import java.util.ListIterator;
 public class Train {
 
     private TrackComponent currentTrack;
-//  private double currentPosition;
     private Station targetStation;
     private Double departureTime;
     private Double lastDepartureTime;
@@ -66,8 +63,6 @@ public class Train {
         this.driveStrategy=myDriveStrategy;
         this.safetyStrategy=mySafetyStrategy;
         this.power=myPower;
-//        this.MAX_VELOCITY=myMaxVelocity;
-//        this.LENGTH=myLength;
         this.trainColor=myColor;
     }
 
@@ -190,18 +185,6 @@ public class Train {
     {
         return this==x;
     }
-
-//    public double getRelativePosition(TrackComponent origo)
-//    {
-//        double returnLength=0;
-//        TrackComponent currentTrack=origo;
-//        while(currentTrack!=this.currentTrack)
-//        {
-//            returnLength+=currentTrack.getLength(this);
-//            currentTrack=currentTrack.getNextTrack(this);
-//        }
-//        return returnLength+this.currentTrack.getTrainEndPosition(this);
-//    }
 
     public double getAbsolutePosition() {
         return this.currentTrack.getAbsoluteTrainEndPosition(this);
