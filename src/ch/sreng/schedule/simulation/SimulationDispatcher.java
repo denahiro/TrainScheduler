@@ -44,13 +44,15 @@ public class SimulationDispatcher {
             Document dispatchFile = DocumentBuilderFactory.newInstance().newDocumentBuilder()
                     .parse(new File(dispatchFilename));
 
-            PrintWriter collectedInfoFile=new PrintWriter(new File(dispatchFile
-                    .getElementsByTagName("infoFile").item(0).getFirstChild().getNodeValue()));
+            File collectedInfoFile=new File(dispatchFile.getElementsByTagName("infoFile")
+                    .item(0).getFirstChild().getNodeValue());
+            collectedInfoFile.getParentFile().mkdirs();
+            PrintWriter collectedInfoWriter=new PrintWriter(collectedInfoFile);
             NodeList tasks=dispatchFile.getElementsByTagName("task");
             for(int i=0;i<tasks.getLength();++i) {
-                doTask(tasks.item(i),collectedInfoFile);
+                doTask(tasks.item(i),collectedInfoWriter);
             }
-            collectedInfoFile.close();
+            collectedInfoWriter.close();
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(SimulationDispatcher.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SAXException ex) {
