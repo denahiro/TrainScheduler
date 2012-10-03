@@ -36,4 +36,6 @@ public abstract class Graph {
 
         myAxes.draw(g, dim, insets);
     }
+
+    public abstract String getSummedInformation();
 }

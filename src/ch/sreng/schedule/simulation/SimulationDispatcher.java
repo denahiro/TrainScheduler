@@ -7,7 +7,6 @@ package ch.sreng.schedule.simulation;
 
 import ch.sreng.schedule.components.mobile.SimplePower;
 import ch.sreng.schedule.components.mobile.Train;
-import ch.sreng.schedule.components.stationary.TrackComponent;
 import ch.sreng.schedule.components.stationary.TrackFactory;
 import ch.sreng.schedule.output.EnergyGraph;
 import ch.sreng.schedule.output.Graph;
@@ -45,10 +44,13 @@ public class SimulationDispatcher {
             Document dispatchFile = DocumentBuilderFactory.newInstance().newDocumentBuilder()
                     .parse(new File(dispatchFilename));
 
+            PrintWriter collectedInfoFile=new PrintWriter(new File(dispatchFile
+                    .getElementsByTagName("infoFile").item(0).getFirstChild().getNodeValue()));
             NodeList tasks=dispatchFile.getElementsByTagName("task");
             for(int i=0;i<tasks.getLength();++i) {
-                doTask(tasks.item(i));
+                doTask(tasks.item(i),collectedInfoFile);
             }
+            collectedInfoFile.close();
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(SimulationDispatcher.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SAXException ex) {
@@ -56,7 +58,7 @@ public class SimulationDispatcher {
         }
     }
 
-    private static void doTask(Node task) throws IOException {
+    private static void doTask(Node task,PrintWriter collectedInfoFile) throws IOException {
         if(task.getNodeType()==Node.ELEMENT_NODE) {
             Element element=(Element) task;
 
@@ -84,8 +86,11 @@ public class SimulationDispatcher {
                 newMaster.doFrame();
             }
 
+            collectedInfoFile.println("Task: "+trackFilename+", "+Double.toString(headway/60)+" minute headway");
+
             for(GraphContainer c :graphContainers) {
                 c.print();
+                collectedInfoFile.println(c.getSummedInformation());
             }
         }
     }
@@ -223,6 +228,10 @@ public class SimulationDispatcher {
                 tmpFile.getParentFile().mkdirs();
                 GraphPrinter.print(this.graph,tmpFile,this.imageDim);
             }
+        }
+
+        public String getSummedInformation(){
+            return this.graph.getSummedInformation();
         }
     }
 }

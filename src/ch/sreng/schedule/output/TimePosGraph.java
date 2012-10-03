@@ -6,6 +6,7 @@
 package ch.sreng.schedule.output;
 
 import ch.sreng.schedule.components.mobile.Train;
+import java.awt.Color;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,6 +29,11 @@ public class TimePosGraph extends Graph {
 
     private HashMap<Train, List<DataPoint>> data=new HashMap<Train, List<DataPoint>>();
 
+    @Override
+    public String getSummedInformation() {
+        return "Number of Trains: "+Integer.toString(this.data.size());
+    }
+
     public enum Units{
         LARGE, SI
     }
@@ -38,7 +44,7 @@ public class TimePosGraph extends Graph {
 
     public TimePosGraph(Units myUnits) {
         super();
-        this.title="Graphical Timetable";
+        this.title="";
         switch(myUnits)
         {
             case LARGE:
@@ -86,6 +92,7 @@ public class TimePosGraph extends Graph {
     }
 
     protected void plotToAxes(GraphAxes axes) {
+        axes.setGrid(60/this.timeFactor, 0, Color.BLACK);
         for(Train currentTrain: this.data.keySet()) {
             List<DataPoint> c=this.data.get(currentTrain);
             List<Double> times=new ArrayList<Double>();

@@ -58,7 +58,7 @@ public class InitialConditionsGraph extends Graph {
                 }
                 tmpTrain.setInitialConditions(p.currentTrack, p.nextStation, p.position, tmpVelocity);
                 myMaster.registerTrain(tmpTrain);
-                tmpColor=Color.BLACK;
+                tmpColor=Color.BLUE;
                 tmpVelocity=null;
             }
         }
@@ -73,6 +73,11 @@ public class InitialConditionsGraph extends Graph {
     }
 
     protected void plotToAxes(GraphAxes axes) {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public String getSummedInformation() {
         throw new UnsupportedOperationException("Not supported.");
     }
 

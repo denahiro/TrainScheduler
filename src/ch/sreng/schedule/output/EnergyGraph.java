@@ -28,6 +28,22 @@ public class EnergyGraph extends Graph {
 
     private HashMap<Train, List<DataPoint>> data=new HashMap<Train, List<DataPoint>>();
 
+    @Override
+    public String getSummedInformation() {
+        double sum=0;
+
+        ListIterator<Double> energyIt=this.addEnergyConsumption().listIterator();
+        ListIterator<DataPoint> timeIt=this.data.values().iterator().next().listIterator();
+        double lastTime=timeIt.next().time;
+        energyIt.next();
+        while(energyIt.hasNext() && timeIt.hasNext()) {
+            double currentTime=timeIt.next().time;
+            sum+=(energyIt.next()*(this.energyFactor/1e6))*(currentTime-lastTime);
+            lastTime=currentTime;
+        }
+        return "Energy Consumed per hour [MWh]: "+Double.toString((sum)/(lastTime));
+    }
+
     public enum Units{
         LARGE, SI
     }
@@ -38,12 +54,12 @@ public class EnergyGraph extends Graph {
 
     public EnergyGraph(Units myUnits) {
         super();
-        this.title="Energy Consumption Graph";
+        this.title="";
         switch(myUnits)
         {
             case LARGE:
                 this.timeFactor=60;
-                this.energyFactor=1000000;
+                this.energyFactor=1e6;
                 this.xLabel="Time [min]";
                 this.yLabel="Consumed Power [MW]";
                 this.xName="timeMin";

@@ -27,13 +27,18 @@ public class GraphAxes {
     private String yLabel=new String();
     private String axisTitle=new String();
 
+    private Color gridColor;
+    private double xGridDist=0;
+    private double yGridDist=0;
+
     final protected int N_TICKS=11;
     final protected int BOTTOM_GAP=30;
     final protected int TOP_GAP=30;
     final protected int LEFT_GAP=50;
     final protected int RIGHT_GAP=50;
-    final protected double CURVE_LINE_WIDTH=1;
+    final protected double CURVE_LINE_WIDTH=0.5;
     final protected double AXIS_LINE_WIDTH=0.5;
+    final protected double GRID_LINE_WIDTH=0.25;
     final protected int TICK_LENGTH=5;
     final protected int TICK_TO_LABEL_GAP=10;
     final protected Font LABEL_FONT=new Font(Font.SANS_SERIF, Font.PLAIN, 10);
@@ -56,6 +61,16 @@ public class GraphAxes {
 
     public void title(String newTitle) {
         this.axisTitle=newTitle;
+    }
+
+    public void setGrid() {
+        this.setGrid(0, 0, Color.BLACK);
+    }
+
+    public void setGrid(double xDist,double yDist,Color newGridColor) {
+        this.xGridDist=xDist;
+        this.yGridDist=yDist;
+        this.gridColor=newGridColor;
     }
 
     private BoundingBox getPlotArea(Dimension dim,Insets insets) {
@@ -110,7 +125,6 @@ public class GraphAxes {
     {
         BoundingBox dataBB=new BoundingBox();
 
-        g.setLineWidth(this.CURVE_LINE_WIDTH);
 
         for(Curve c: this.curves) {
             BoundingBox tmpBB=c.getBoundingBox();
@@ -140,6 +154,9 @@ public class GraphAxes {
 
         g.setClip(plotBB.xMin, plotBB.yMax, plotBB.xMax-plotBB.xMin, plotBB.yMin-plotBB.yMax);
 
+        this.drawGrid(g,plotBB,dataBB);
+
+        g.setLineWidth(this.CURVE_LINE_WIDTH);
         for(Curve c: this.curves) {
             c.draw(g,plotBB,dataBB);
         }
@@ -195,6 +212,30 @@ public class GraphAxes {
         fm=g.getFontMetrics();
         g.drawString(this.axisTitle, (plotBB.xMax+plotBB.xMin)/2-fm.stringWidth(this.axisTitle)/2
                 , plotBB.yMax-fm.getMaxDescent()-this.TICK_TO_LABEL_GAP);
+    }
+
+    private void drawGrid(VectorGraphics g,BoundingBox plotBB,BoundingBox dataBB) {
+        g.setLineWidth(this.GRID_LINE_WIDTH);
+        g.setColor(this.gridColor);
+        Transform xTrans=new Transform(dataBB.xMax, dataBB.xMin, plotBB.xMax, plotBB.xMin);
+        Transform yTrans=new Transform(dataBB.yMax, dataBB.yMin, plotBB.yMax, plotBB.yMin);
+        if(this.xGridDist>0) {
+            double cx=dataBB.xMin;
+            while(cx<dataBB.xMax) {
+                double tmp=xTrans.doTransform(cx);
+                g.drawLine(tmp, plotBB.yMin, tmp, plotBB.yMax);
+                cx+=this.xGridDist;
+            }
+        }
+
+        if(this.yGridDist>0) {
+            double cy=dataBB.yMin;
+            while(cy<dataBB.yMax) {
+                double tmp=yTrans.doTransform(cy);
+                g.drawLine(plotBB.xMin, tmp, plotBB.xMax, tmp);
+                cy+=this.yGridDist;
+            }
+        }
     }
 
     public class Curve {
