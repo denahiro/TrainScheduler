@@ -88,8 +88,9 @@ public class SimulationDispatcher {
                 newMaster.doFrame();
             }
 
-            collectedInfoFile.println("Task: "+trackFilename+", "+Double.toString(headway/60)+" minute headway");
-
+            String descriptor="Task: "+trackFilename+", "+Double.toString(headway/60)+" minute headway";
+            collectedInfoFile.println(descriptor);
+            System.out.println(descriptor+" completed");
             for(GraphContainer c :graphContainers) {
                 c.print();
                 collectedInfoFile.println(c.getSummedInformation());

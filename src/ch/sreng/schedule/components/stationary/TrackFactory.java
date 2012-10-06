@@ -199,6 +199,12 @@ public class TrackFactory {
 
         ListIterator<Segment> it=segments.listIterator();
 
+        //add first as track not station
+        {
+            Segment currentSegment=it.next();
+            myLinkables.add(new TrackSimple(currentSegment.beginChainage
+                            ,currentSegment.maxVelocity, currentSegment.gradient));
+        }
         while(it.hasNext()) {
             Segment currentSegment=it.next();
             if(currentSegment.stationName==null) {
@@ -211,6 +217,12 @@ public class TrackFactory {
             }
         }
 
+        //add first as track not station
+        {
+            Segment currentSegment=it.previous();
+            myLinkables.add(new TrackSimple(currentSegment.endChainage
+                            ,currentSegment.maxVelocity, currentSegment.gradient));
+        }
         while(it.hasPrevious()) {
             Segment currentSegment=it.previous();
             if(currentSegment.stationName==null) {

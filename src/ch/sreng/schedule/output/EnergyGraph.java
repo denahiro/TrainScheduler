@@ -31,6 +31,7 @@ public class EnergyGraph extends Graph {
     @Override
     public String getSummedInformation() {
         double sum=0;
+        double peak=0;
 
         ListIterator<Double> energyIt=this.addEnergyConsumption().listIterator();
         ListIterator<DataPoint> timeIt=this.data.values().iterator().next().listIterator();
@@ -38,10 +39,17 @@ public class EnergyGraph extends Graph {
         energyIt.next();
         while(energyIt.hasNext() && timeIt.hasNext()) {
             double currentTime=timeIt.next().time;
-            sum+=(energyIt.next()*(this.energyFactor/1e6))*(currentTime-lastTime);
+            double currentEnergy=energyIt.next()*(this.energyFactor/1e6);
+            sum+=currentEnergy*(currentTime-lastTime);
+
+            if(currentEnergy>peak) {
+                peak=currentEnergy;
+            }
+
             lastTime=currentTime;
         }
-        return "Energy Consumed per hour [MWh]: "+Double.toString((sum)/(lastTime));
+        return "Energy Consumed per hour [MWh]: "+Double.toString((sum)/(lastTime))
+                +"; Peak Consumption [MW]: "+Double.toString(peak);
     }
 
     public enum Units{
