@@ -79,7 +79,7 @@ public class SimulationDispatcher {
             NodeList graphNodes=element.getElementsByTagName("graphs");
             List<GraphContainer> graphContainers=new ArrayList<GraphContainer>();
             for(int i=0;i<graphNodes.getLength();++i) {
-                graphContainers.addAll(parseGraphs(graphNodes.item(i), newMaster));
+                graphContainers.addAll(parseGraphs(graphNodes.item(i), newMaster,track));
             }
 
             double finalTime=Double.parseDouble(element.getElementsByTagName("finalTime").item(0).getFirstChild().getNodeValue());
@@ -98,7 +98,8 @@ public class SimulationDispatcher {
         }
     }
 
-    private static List<GraphContainer> parseGraphs(Node gNode,TimetableMaster master) {
+    private static List<GraphContainer> parseGraphs(Node gNode,TimetableMaster master
+            ,TrackFactory.TrackContainer track) {
         List<GraphContainer> returnGraphs=new ArrayList<GraphContainer>();
         if(gNode.getNodeType()==Node.ELEMENT_NODE) {
             Element graphElement=(Element) gNode;
@@ -106,7 +107,7 @@ public class SimulationDispatcher {
             for(int i=0;i<timePosGraphNodes.getLength();++i) {
                 Node timePosNode=timePosGraphNodes.item(i);
                 if(timePosNode.getNodeType()==Node.ELEMENT_NODE) {
-                    Graph tmpGraph;
+                    TimePosGraph tmpGraph;
                     Element timePosElement=(Element) timePosNode;
                     String units=timePosElement.getElementsByTagName("units").item(0).getChildNodes().item(0).getNodeValue();
                     if(units.equalsIgnoreCase("large")) {
@@ -116,6 +117,7 @@ public class SimulationDispatcher {
                     }
                     master.addOutputGraph(tmpGraph);
                     returnGraphs.add(generateContainer(timePosElement,tmpGraph));
+                    tmpGraph.doStationNames(track);
                 }
             }
             NodeList energyGraphNodes=graphElement.getElementsByTagName("energyGraph");

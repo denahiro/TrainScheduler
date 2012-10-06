@@ -10,9 +10,11 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Insets;
+import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import org.freehep.graphics2d.VectorGraphics;
@@ -28,6 +30,8 @@ public class GraphAxes {
     private String axisTitle=new String();
 
     private Color gridColor;
+//    private HashMap<Double,String> xGrid=null;
+    private HashMap<Double,String> yGrid=null;
     private double xGridDist=0;
     private double yGridDist=0;
 
@@ -70,6 +74,20 @@ public class GraphAxes {
     public void setGrid(double xDist,double yDist,Color newGridColor) {
         this.xGridDist=xDist;
         this.yGridDist=yDist;
+        if(yDist>0) {
+            this.yGrid=null;
+        }
+        this.gridColor=newGridColor;
+    }
+
+    public void setGrid(HashMap<Double,String> newXGrid,HashMap<Double,String> newYGrid,Color newGridColor) {
+        if(newXGrid!=null) {
+            throw new UnsupportedOperationException("Not implemented yet.");
+        }
+        this.yGrid=newYGrid;
+        if(newYGrid!=null) {
+            this.yGridDist=0;
+        }
         this.gridColor=newGridColor;
     }
 
@@ -152,16 +170,17 @@ public class GraphAxes {
 
         BoundingBox plotBB=this.getPlotArea(dim,insets);
 
-        g.setClip(plotBB.xMin, plotBB.yMax, plotBB.xMax-plotBB.xMin, plotBB.yMin-plotBB.yMax);
-
         this.drawGrid(g,plotBB,dataBB);
 
+        g.setClip(plotBB.xMin, plotBB.yMax, plotBB.xMax-plotBB.xMin, plotBB.yMin-plotBB.yMax);
+        
         g.setLineWidth(this.CURVE_LINE_WIDTH);
         for(Curve c: this.curves) {
             c.draw(g,plotBB,dataBB);
         }
 
-        g.setClip(insets.left, insets.top, dim.width-insets.left-insets.right, dim.height-insets.bottom-insets.top);
+//        g.setClip(insets.left, insets.top, dim.width-insets.left-insets.right, dim.height-insets.bottom-insets.top);
+        g.setClip(null);
 
         g.setLineWidth(this.AXIS_LINE_WIDTH);
         g.setColor(Color.BLACK);
@@ -215,11 +234,13 @@ public class GraphAxes {
     }
 
     private void drawGrid(VectorGraphics g,BoundingBox plotBB,BoundingBox dataBB) {
+        Shape lastClip=g.getClip();
+        g.setClip(plotBB.xMin, plotBB.yMax, plotBB.xMax-plotBB.xMin, plotBB.yMin-plotBB.yMax);
         g.setLineWidth(this.GRID_LINE_WIDTH);
         g.setColor(this.gridColor);
         Transform xTrans=new Transform(dataBB.xMax, dataBB.xMin, plotBB.xMax, plotBB.xMin);
         Transform yTrans=new Transform(dataBB.yMax, dataBB.yMin, plotBB.yMax, plotBB.yMin);
-        if(this.xGridDist>0) {
+        if(this.xGridDist > 0) {
             double cx=dataBB.xMin;
             while(cx<dataBB.xMax) {
                 double tmp=xTrans.doTransform(cx);
@@ -228,12 +249,29 @@ public class GraphAxes {
             }
         }
 
-        if(this.yGridDist>0) {
+        if(this.yGrid!=null) {
+            for(Double cy:this.yGrid.keySet()) {
+                double tmp=yTrans.doTransform(cy);
+                g.drawLine(plotBB.xMin, tmp, plotBB.xMax, tmp);
+            }
+        } else if(this.yGridDist>0) {
             double cy=dataBB.yMin;
             while(cy<dataBB.yMax) {
                 double tmp=yTrans.doTransform(cy);
                 g.drawLine(plotBB.xMin, tmp, plotBB.xMax, tmp);
                 cy+=this.yGridDist;
+            }
+        }
+
+        g.setClip(lastClip);
+
+        FontMetrics fm=g.getFontMetrics();
+        if(this.yGrid!=null) {
+            for(Double cy:this.yGrid.keySet()) {
+                if(cy>=dataBB.yMin && cy<=dataBB.yMax) {
+                    double tmp=yTrans.doTransform(cy);
+                    g.drawString(this.yGrid.get(cy), plotBB.xMax+fm.charWidth("A".charAt(0)), tmp+3);
+                }
             }
         }
     }

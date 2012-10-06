@@ -6,6 +6,8 @@
 package ch.sreng.schedule.output;
 
 import ch.sreng.schedule.components.mobile.Train;
+import ch.sreng.schedule.components.stationary.Station;
+import ch.sreng.schedule.components.stationary.TrackFactory;
 import java.awt.Color;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -26,6 +28,8 @@ public class TimePosGraph extends Graph {
 
     private String xName;
     private String yName;
+
+    private HashMap<Double,String> stationNames;
 
     private HashMap<Train, List<DataPoint>> data=new HashMap<Train, List<DataPoint>>();
 
@@ -91,8 +95,30 @@ public class TimePosGraph extends Graph {
         }
     }
 
+    public void doStationNames(TrackFactory.TrackContainer track) {
+        this.stationNames=new HashMap<Double, String>();
+        final double maxDistance=1/this.lengthFactor;
+        Station currentStation=track.getFirstStation();
+        while(currentStation!=track.getFirstStation() || this.stationNames.isEmpty()) {
+            if(!currentStation.getName().startsWith("%")) {
+                boolean addStation=true;
+                double cPos=currentStation.getCentrePointAbsolute()/this.lengthFactor;
+                for(Double stationPos: this.stationNames.keySet()) {
+                    if(Math.abs(stationPos-cPos)<maxDistance) {
+                        addStation=false;
+                    }
+                }
+                if(addStation) {
+                    this.stationNames.put(cPos, currentStation.getName());
+                }
+            }
+            currentStation=currentStation.getNextStation();
+        }
+    }
+
     protected void plotToAxes(GraphAxes axes) {
         axes.setGrid(60/this.timeFactor, 0, Color.BLACK);
+        axes.setGrid(null, this.stationNames, Color.BLACK);
         for(Train currentTrain: this.data.keySet()) {
             List<DataPoint> c=this.data.get(currentTrain);
             List<Double> times=new ArrayList<Double>();

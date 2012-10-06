@@ -211,7 +211,8 @@ public class TrackFactory {
                 myLinkables.add(new TrackSimple(currentSegment.beginChainage
                         ,currentSegment.maxVelocity, currentSegment.gradient));
             } else {
-                Station tmpStation=new Station(currentSegment.beginChainage, currentSegment.gradient);
+                Station tmpStation=new Station(currentSegment.beginChainage, currentSegment.gradient
+                        ,currentSegment.stationName);
                 myStations.add(tmpStation);
                 myLinkables.add(tmpStation);
             }
@@ -229,7 +230,8 @@ public class TrackFactory {
                 myLinkables.add(new TrackSimple(currentSegment.endChainage
                         ,currentSegment.maxVelocity, currentSegment.gradient));
             } else {
-                Station tmpStation=new Station(currentSegment.endChainage, currentSegment.gradient);
+                Station tmpStation=new Station(currentSegment.endChainage, currentSegment.gradient
+                        ,currentSegment.stationName);
                 myStations.add(tmpStation);
                 myLinkables.add(tmpStation);
             }

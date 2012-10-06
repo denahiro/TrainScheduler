@@ -23,6 +23,7 @@ public class Station implements Linkable<TrackComponent>{
     final static protected double MAX_STOP_VELOCITY=1e-3;
     protected static Double WAIT_TIME=null;
     private double gradient;
+    protected String name;
 
     final private static String SOURCE_FILE="data/track/station.ini";
     private static void loadIni() {
@@ -49,10 +50,11 @@ public class Station implements Linkable<TrackComponent>{
 
     private Station nextStation;
 
-    public Station(double chainage,double myGradient) {
+    public Station(double chainage,double myGradient,String myName) {
         loadIni();
         this.gradient=myGradient;
         this.platformStretch=new TrackSimple(chainage, MAX_STATION_VELOCITY,this.gradient);
+        this.name=myName;
     }
 
     public TrackComponent getLinkTo() {
@@ -82,6 +84,16 @@ public class Station implements Linkable<TrackComponent>{
 
     public double getWaitTime() {
         return WAIT_TIME;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public double getCentrePointAbsolute() {
+        double begin=this.platformStretch.getChainage();
+        double sign=Math.signum(this.stopStretch.getChainage()-begin);
+        return begin+sign*(this.platformStretch.getLength(null)+this.stopStretch.getLength(null))/2;
     }
 
     protected class TrackStopper extends TrackSimple {

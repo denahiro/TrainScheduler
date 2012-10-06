@@ -1,6 +1,6 @@
 HORIZONTAL;;;;;;;;VERTICAL;;;;;;
 Start Chainage;Finish Chainage;Station Centre Line;Station  number;Length of element (m);Radius (m);Speed (Km/h);;Start Chainage;Finish Chaiange;Length of element (m);Radius (m);Gradient    (%);;
-0;;;T1.1;385;INFINITY;80;;0;248;100;INFINITY;0.000;;
+0;;;%T1.1;385;INFINITY;80;;0;248;100;INFINITY;0.000;;
 150.0;225.0;39.0;IC1;;;;;248;283;34;-2000;-;;
 ;533;;;;;80;;283;482;200;INFINITY;-1.714;;
 533;577;;;44;TRANS;;;482;517;34;2000;-;;
@@ -354,5 +354,5 @@ Start Chainage;Finish Chainage;Station Centre Line;Station  number;Length of ele
 30982;31022;;;40;TRANS;;;;;;;;;
 31022;;;;500;INFINITY;80;;;;;;;;
 31072.0;31147.0;30961;IC6;;;;;;;;;;;
-;31297;;T1.2;;;80;;;;;;;;
+;31297;;%T1.2;;;80;;;;;;;;
 ;;;;;;;;;;;;;;
