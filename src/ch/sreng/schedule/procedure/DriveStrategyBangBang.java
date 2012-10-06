@@ -47,7 +47,7 @@ public class DriveStrategyBangBang implements DriveStrategy {
                 //Get all trains on current track and get their velocity constraint
                 for(Train otherTrain: currentTrack.getOtherTrains(requester))
                 {
-                    if(otherTrain.getVelocity()<requester.getVelocity())
+                    if(otherTrain.getVelocity()<=requester.getVelocity())
                     {
                         double tmpTrainBrakePosition=tmpDistance+currentTrack.getTrainEndPosition(otherTrain)
                                 -requester.getSafetyStrategy().brickWallDistance(requester, otherTrain.getVelocity());
@@ -57,8 +57,12 @@ public class DriveStrategyBangBang implements DriveStrategy {
                         }
                         if(maxVelocityTrain==null || maxVelocityTrain.distance>tmpTrainBrakePosition)
                         {
-                            maxVelocityTrain=new MaxVelocity(tmpTrainBrakePosition,
-                                    Math.min(otherTrain.getVelocity(),requester.getMaxVelocity()));
+                            if(tmpTrainBrakePosition<0) {
+                                maxVelocityTrain=new MaxVelocity(tmpTrainBrakePosition,0);
+                            } else {
+                                maxVelocityTrain=new MaxVelocity(tmpTrainBrakePosition,
+                                        Math.min(otherTrain.getVelocity(),requester.getMaxVelocity()));
+                            }
                         }
                     }
                 }
@@ -84,7 +88,8 @@ public class DriveStrategyBangBang implements DriveStrategy {
             while(cleanIterator.hasNext())
             {
                 MaxVelocity currentElement=cleanIterator.next();
-                if(currentElement.distance<maxVelocityTrain.distance)
+                if(currentElement.distance<maxVelocityTrain.distance
+                        || maxVelocityTrain.maxVelocity>currentElement.maxVelocity)
                 {
                     lastAddedVelocity=currentElement.maxVelocity;
                     maxVelocityReturn.add(currentElement);
@@ -221,8 +226,14 @@ public class DriveStrategyBangBang implements DriveStrategy {
             {
                 limitIterator.next();
             }
+
+//            if(currentMinBrakeDistance<0 && currentLimit.maxVelocity<=currentVelocity) {
+//                returnList=new ArrayList<AccelerationAtTime>();
+//                returnList.add(new AccelerationAtTime(0, -requester.getMaxDeceleration()));
+//                while(limitIterator.hasNext()) {limitIterator.next();}
+//            }
         }
-        
+
         return returnList;
     }
 
