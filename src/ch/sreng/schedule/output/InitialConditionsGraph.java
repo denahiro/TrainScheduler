@@ -29,6 +29,12 @@ public class InitialConditionsGraph extends Graph {
     private double lastVelocity;
     private double lastTime;
 
+    final static private Color TRAIN_COLOR=Color.BLUE;
+    private DataPoint firstTrain=null;
+    final static private Color FIRST_TRAIN_COLOR=Color.RED;
+    private DataPoint lastTrain=null;
+    final static private Color LAST_TRAIN_COLOR=new Color(0, 200, 0);
+
     private List<DataPoint> initialConditions=new ArrayList<DataPoint>();
 
     public InitialConditionsGraph(double myHeadways) {
@@ -37,9 +43,14 @@ public class InitialConditionsGraph extends Graph {
 
     public void registerState(double time, Train toRegister) {
         if(this.lastTimeDeploy==null || this.lastTimeDeploy+this.headway<=time) {
-            this.initialConditions.add(new DataPoint(time,toRegister.getCurrentTrack()
-                ,toRegister.getTargetStation(),toRegister.getPositionOnCurrentTrack()
-                ,toRegister.getVelocity()));
+            DataPoint newPoint=new DataPoint(time,toRegister);
+            if(this.firstTrain==null) {
+                this.firstTrain=newPoint;
+            }
+            if(this.lastTrain==null || this.lastTrain.absolutePosition<toRegister.getAbsolutePosition()) {
+                this.lastTrain=newPoint;
+            }
+            this.initialConditions.add(newPoint);
             this.lastTimeDeploy=time;
         }
         this.lastVelocity=toRegister.getVelocity();
@@ -47,10 +58,15 @@ public class InitialConditionsGraph extends Graph {
     }
 
     public void initialiseTrains(Master myMaster) {
-        Color tmpColor=Color.RED;
         Double tmpVelocity=this.lastVelocity;
         for(DataPoint p:this.initialConditions) {
             if(this.lastTime-p.time>0.5*this.headway) {
+                Color tmpColor=TRAIN_COLOR;
+                if(p==this.firstTrain) {
+                    tmpColor=FIRST_TRAIN_COLOR;
+                } else if(p==this.lastTrain) {
+                    tmpColor=LAST_TRAIN_COLOR;
+                }
                 Train tmpTrain=new Train(new DriveStrategyBangBang(), new SafetyStrategy()
                     , new SimplePower(), tmpColor);
                 if(tmpVelocity==null) {
@@ -58,7 +74,6 @@ public class InitialConditionsGraph extends Graph {
                 }
                 tmpTrain.setInitialConditions(p.currentTrack, p.nextStation, p.position, tmpVelocity);
                 myMaster.registerTrain(tmpTrain);
-                tmpColor=Color.BLUE;
                 tmpVelocity=null;
             }
         }
@@ -87,14 +102,15 @@ public class InitialConditionsGraph extends Graph {
         public double position;
         public Station nextStation;
         public double velocity;
+        public double absolutePosition;
 
-        public DataPoint(double myTime,TrackComponent myTrack,Station myStation
-                ,double myPosition,double myVelocity) {
+        public DataPoint(double myTime,Train toRegister) {
             this.time=myTime;
-            this.position=myPosition;
-            this.currentTrack=myTrack;
-            this.nextStation=myStation;
-            this.velocity=myVelocity;
+            this.position=toRegister.getPositionOnCurrentTrack();
+            this.currentTrack=toRegister.getCurrentTrack();
+            this.nextStation=toRegister.getTargetStation();
+            this.velocity=toRegister.getVelocity();
+            this.absolutePosition=toRegister.getAbsolutePosition();
         }
     }
 }
